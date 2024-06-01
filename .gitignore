@@ -50,4 +50,8 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+!/.nvmrc
+.DS_Store
+.idea
+*.iml
 !/.projenrc.ts
