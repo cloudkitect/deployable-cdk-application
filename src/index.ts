@@ -121,7 +121,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     });
     this.releaseConfigs = options.releaseConfigs ?? [];
     this.deploymentTasks=[];
-    this.addDevDeps('@cloudkitect/deployable-cdk-application');
+    this.addDevDeps('@cloudkitect/deployable-cdk-app');
     this.createDeploymentTasks(options);
   }
 
