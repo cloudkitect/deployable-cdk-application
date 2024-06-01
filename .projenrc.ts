@@ -1,5 +1,5 @@
-import {cdk, javascript, ReleasableCommits, TextFile} from 'projen';
-import {NpmAccess} from "projen/lib/javascript";
+import { cdk, javascript, ReleasableCommits, TextFile } from 'projen';
+import { NpmAccess } from 'projen/lib/javascript';
 
 const nodeVersion = '20';
 
