@@ -9,7 +9,7 @@ This project is about making it seamless to deploy your CDK application in vario
 In order to deploy your CDK application into various environments you need to create your projen project from deployable cdk app.
 
 ```shell
-npx projen new --from "@cloudkitect/deployable-cdk-application"
+npx projen new --from "@cloudkitect/deployable-cdk-app"
 ```
 
 This will create a projen project that will can be setup to deploy into various aws accounts and environments
