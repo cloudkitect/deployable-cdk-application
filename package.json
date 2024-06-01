@@ -32,7 +32,7 @@
     "projen": "npx projen"
   },
   "author": {
-    "name": "mtahir-cloudkitect",
+    "name": "CloudKitect Inc",
     "email": "support@cloudkitect.com",
     "organization": false
   },
@@ -76,7 +76,7 @@
     "projen"
   ],
   "main": "lib/index.js",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },

@@ -4,7 +4,7 @@ import {NpmAccess} from "projen/lib/javascript";
 const nodeVersion = '20';
 
 const project = new cdk.JsiiProject({
-  author: 'mtahir-cloudkitect',
+  author: 'CloudKitect Inc',
   authorAddress: 'support@cloudkitect.com',
   defaultReleaseBranch: 'main',
   jsiiVersion: '~5.4.0',
@@ -29,6 +29,7 @@ const project = new cdk.JsiiProject({
   npmProvenance: false,
   releasableCommits: ReleasableCommits.featuresAndFixes(),
   deps: ['projen'],
+  license: 'MIT',
   peerDeps: ['projen', 'constructs'],
 });
 
