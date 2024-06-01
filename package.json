@@ -1,5 +1,5 @@
 {
-  "name": "@cloudkitect/deployable-cdk-application",
+  "name": "@cloudkitect/deployable-cdk-app",
   "description": "CloudKitect deployable cdk application",
   "repository": {
     "type": "git",
