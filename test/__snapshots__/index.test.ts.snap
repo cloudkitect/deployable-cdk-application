@@ -93,7 +93,7 @@ jobs:
           git add .
           git commit -s -m "chore: self mutation"
           git push origin HEAD:$PULL_REQUEST_REF
-  deploy:
+  deploy_to_Dev:
     needs: release_github
     runs-on: ubuntu-latest
     permissions:
