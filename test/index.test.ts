@@ -12,6 +12,7 @@ function mkdtemp() {
 }
 
 const releaseWorkflowFilePath = '.github/workflows/release.yml';
+const buildWorkflowFilePath = '.github/workflows/build.yml';
 
 describe('No stack pattern', () => {
   const project = new DeployableCdkApplication({
@@ -25,6 +26,7 @@ describe('No stack pattern', () => {
       deploymentMethod: 'change-set',
       roleToAssume: 'role',
       region: 'us-east-1',
+      workflowName: 'build',
     },
     {
       accountType: 'Prod',
@@ -38,5 +40,8 @@ describe('No stack pattern', () => {
   const synthOutput = synthSnapshot(project);
   test('release workflow', () => {
     expect(synthOutput[releaseWorkflowFilePath]).toMatchSnapshot();
+  });
+  test('build workflow', () => {
+    expect(synthOutput[buildWorkflowFilePath]).toMatchSnapshot();
   });
 });

@@ -4343,6 +4343,7 @@ const releaseConfig: ReleaseConfig = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.manualApprovalRequired">manualApprovalRequired</a></code> | <code>boolean</code> | Is manual approval required for deployments. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.postDeploymentSteps">postDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Post deployment job steps. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.preDeploymentSteps">preDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Pre deployment job steps. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.workflowName">workflowName</a></code> | <code>string</code> | Workflow name where the deployment job should be added. |
 
 ---
 
@@ -4508,6 +4509,21 @@ public readonly preDeploymentSteps: JobStep[];
 - *Type:* projen.github.workflows.JobStep[]
 
 Pre deployment job steps.
+
+---
+
+##### `workflowName`<sup>Optional</sup> <a name="workflowName" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.workflowName"></a>
+
+```typescript
+public readonly workflowName: string;
+```
+
+- *Type:* string
+- *Default:* release
+
+Workflow name where the deployment job should be added.
+
+Must be either release or build
 
 ---
 
