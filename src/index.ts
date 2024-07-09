@@ -60,6 +60,13 @@ export interface ReleaseConfig {
    * Post deployment job steps
    */
   readonly postDeploymentSteps?: JobStep[];
+
+  /**
+   * Workflow name where the deployment job should be added.
+   * Must be either release or build
+   * @default release
+   */
+  readonly workflowName?: string;
 }
 
 /**
@@ -190,7 +197,11 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       let jobName = `deploy_to_${releaseConfig.accountType}`;
       const job: Record<string, Job> = {};
       job[jobName] = jobDefinition;
-      this.release?.addJobs(job);
+      if (releaseConfig.workflowName == 'build') {
+        this.buildWorkflow?.addPostBuildJob('deploy', jobDefinition);
+      } else {
+        this.release?.addJobs(job);
+      }
     }
   }
 
