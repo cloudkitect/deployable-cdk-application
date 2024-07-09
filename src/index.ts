@@ -198,7 +198,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       const job: Record<string, Job> = {};
       job[jobName] = jobDefinition;
       if (releaseConfig.workflowName == 'build') {
-        this.buildWorkflow?.addPostBuildJob('deploy', jobDefinition);
+        this.buildWorkflow?.addPostBuildJob(jobName, jobDefinition);
       } else {
         this.release?.addJobs(job);
       }
