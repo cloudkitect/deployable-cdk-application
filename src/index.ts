@@ -97,6 +97,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   constructor(options: DeployableCdkApplicationOptions) {
     super({
       ...options,
+      buildWorkflowOptions: {
+        permissions: {
+          contents: JobPermission.WRITE,
+          idToken: JobPermission.WRITE,
+        },
+      },
       packageManager: NodePackageManager.PNPM,
       pnpmVersion: '9',
       release: options.release ?? true,
