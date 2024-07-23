@@ -66,9 +66,10 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentJobs">buildDeploymentJobs</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.checkoutStep">checkoutStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createDeploymentTasks">createDeploymentTasks</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.currentBranch">currentBranch</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.deploymentStep">deploymentStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.generateToken">generateToken</a></code> | *No description.* |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.getTag">getTag</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag">latestTag</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualApprovalStep">manualApprovalStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.packageManagerCommand">packageManagerCommand</a></code> | *No description.* |
 
@@ -667,6 +668,12 @@ public createDeploymentTasks(options: DeployableCdkApplicationOptions): void
 
 ---
 
+##### `currentBranch` <a name="currentBranch" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.currentBranch"></a>
+
+```typescript
+public currentBranch(): JobStep
+```
+
 ##### `deploymentStep` <a name="deploymentStep" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.deploymentStep"></a>
 
 ```typescript
@@ -691,13 +698,13 @@ public deploymentStep(packageManager: NodePackageManager, releaseConfig: Release
 public generateToken(): JobStep
 ```
 
-##### `getTag` <a name="getTag" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.getTag"></a>
+##### `latestTag` <a name="latestTag" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag"></a>
 
 ```typescript
-public getTag(releaseConfig: ReleaseConfig): JobStep
+public latestTag(releaseConfig: ReleaseConfig): JobStep
 ```
 
-###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.getTag.parameter.releaseConfig"></a>
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag.parameter.releaseConfig"></a>
 
 - *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
 

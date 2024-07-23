@@ -177,9 +177,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
         steps: [],
       };
 
-      jobDefinition.steps.push(this.checkoutStep('main'));
-      jobDefinition.steps.push(this.getTag(releaseConfig));
-      jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
+      jobDefinition.steps.push(this.currentBranch());
+      jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_BRANCH }}'));
+      if (releaseConfig.workflowName != 'build') {
+        jobDefinition.steps.push(this.latestTag(releaseConfig));
+        jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
+      }
       if (releaseConfig.manualApprovalRequired) {
         jobDefinition.steps.push(this.generateToken());
         jobDefinition.steps.push(this.manualApprovalStep(releaseConfig));
@@ -245,13 +248,21 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     };
   }
 
-  getTag(releaseConfig: ReleaseConfig): JobStep {
+  latestTag(releaseConfig: ReleaseConfig): JobStep {
     let tagCommand = releaseConfig.deploymentTag ?? '$(git describe --tags --abbrev=0 2>/dev/null)';
     console.log(tagCommand);
     return {
       name: 'Get latest tag',
       id: 'get_tag',
       run: 'CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null)\necho "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV',
+    };
+  }
+
+  currentBranch(): JobStep {
+    return {
+      name: 'Get current branch',
+      id: 'get_branch',
+      run: 'CURRENT_BRANCH=$(git branch --show-current)\necho "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_ENV',
     };
   }
 
