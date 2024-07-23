@@ -97,16 +97,16 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   constructor(options: DeployableCdkApplicationOptions) {
     super({
       ...options,
-      buildWorkflowOptions: {
+      buildWorkflowOptions: options.buildWorkflowOptions ?? {
         permissions: {
           contents: JobPermission.WRITE,
           idToken: JobPermission.WRITE,
         },
       },
-      packageManager: NodePackageManager.PNPM,
-      pnpmVersion: '9',
+      packageManager: options.packageManager ?? NodePackageManager.PNPM,
+      pnpmVersion: options.pnpmVersion ?? '9',
       release: options.release ?? true,
-      pullRequestTemplateContents: [
+      pullRequestTemplateContents: options.pullRequestTemplateContents ?? [
         '## What is this PR for?',
         '',
         '## What type of PR is it?',
