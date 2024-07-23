@@ -81,6 +81,7 @@ export interface DeployableCdkApplicationOptions extends AwsCdkTypeScriptAppOpti
    * List of release configurations, this will specify environment specific release configurations.
    */
   readonly releaseConfigs: ReleaseConfig[];
+
 }
 
 /**
@@ -161,12 +162,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   buildDeploymentJobs() {
-    for (let releaseConfig of this.releaseConfigs) {
+    let buildDeploymentNeeds = ['build'];
+    let releaseDeploymentNeeds = ['release_github'];
+    this.releaseConfigs.forEach((releaseConfig) => {
       const jobDefinition: Job = {
         runsOn: ['ubuntu-latest'],
-        needs: [
-          'release_github',
-        ],
+        needs: releaseConfig.workflowName == 'build' ? buildDeploymentNeeds : releaseDeploymentNeeds,
         permissions: {
           contents: JobPermission.WRITE,
           deployments: JobPermission.READ,
@@ -199,10 +200,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       job[jobName] = jobDefinition;
       if (releaseConfig.workflowName == 'build') {
         this.buildWorkflow?.addPostBuildJob(jobName, jobDefinition);
+        buildDeploymentNeeds = [jobName];
       } else {
         this.release?.addJobs(job);
+        releaseDeploymentNeeds = [jobName];
       }
-    }
+    });
   }
 
   checkoutStep(passedRef: string): JobStep {
