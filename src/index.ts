@@ -3,9 +3,18 @@ import { AwsCdkTypeScriptApp, AwsCdkTypeScriptAppOptions } from 'projen/lib/awsc
 import { Job, JobPermission, JobStep } from 'projen/lib/github/workflows-model';
 import { NodePackageManager, NodeProject } from 'projen/lib/javascript';
 
+/**
+ * Supported deployment methods
+ */
 export type DeploymentMethod = 'direct' | 'change-set' | 'prepare-change-set';
+/**
+ * Supported account types.
+ */
 export type AccountType = 'Dev' | 'Test' | 'QA' | 'Uat' | 'PreProd' | 'Prod';
 
+/**
+ * Release configuration
+ */
 export interface ReleaseConfig {
   /**
      * Environment name to deploy to
@@ -91,7 +100,13 @@ export interface DeployableCdkApplicationOptions extends AwsCdkTypeScriptAppOpti
  */
 export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
+  /**
+   * Deployment tasks created for this application
+   */
   readonly deploymentTasks: Task[];
+  /**
+   * Release configurations used for this application
+   */
   readonly releaseConfigs: ReleaseConfig[];
 
   constructor(options: DeployableCdkApplicationOptions) {
