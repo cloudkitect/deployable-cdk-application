@@ -66,7 +66,6 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentJobs">buildDeploymentJobs</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.checkoutStep">checkoutStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createDeploymentTasks">createDeploymentTasks</a></code> | *No description.* |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.currentBranch">currentBranch</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.deploymentStep">deploymentStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.generateToken">generateToken</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag">latestTag</a></code> | *No description.* |
@@ -667,12 +666,6 @@ public createDeploymentTasks(options: DeployableCdkApplicationOptions): void
 - *Type:* <a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions">DeployableCdkApplicationOptions</a>
 
 ---
-
-##### `currentBranch` <a name="currentBranch" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.currentBranch"></a>
-
-```typescript
-public currentBranch(): JobStep
-```
 
 ##### `deploymentStep` <a name="deploymentStep" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.deploymentStep"></a>
 

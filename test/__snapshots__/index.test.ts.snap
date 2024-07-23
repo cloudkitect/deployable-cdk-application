@@ -111,15 +111,15 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
-      - name: Get current branch
-        id: get_branch
-        run: |-
-          CURRENT_BRANCH=$(git branch --show-current)
-          echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: \${{ env.CURRENT_BRANCH }}
+          ref: main
+          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -157,15 +157,15 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
-      - name: Get current branch
-        id: get_branch
-        run: |-
-          CURRENT_BRANCH=$(git branch --show-current)
-          echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: \${{ env.CURRENT_BRANCH }}
+          ref: main
+          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -284,15 +284,10 @@ jobs:
       id-token: write
       issues: write
     steps:
-      - name: Get current branch
-        id: get_branch
-        run: |-
-          CURRENT_BRANCH=$(git branch --show-current)
-          echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: \${{ env.CURRENT_BRANCH }}
+          ref: main
           fetch-depth: 0
       - name: Get latest tag
         id: get_tag
@@ -344,15 +339,10 @@ jobs:
       id-token: write
       issues: write
     steps:
-      - name: Get current branch
-        id: get_branch
-        run: |-
-          CURRENT_BRANCH=$(git branch --show-current)
-          echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: \${{ env.CURRENT_BRANCH }}
+          ref: main
           fetch-depth: 0
       - name: Get latest tag
         id: get_tag
