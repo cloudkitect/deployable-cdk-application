@@ -94,7 +94,7 @@ jobs:
           git commit -s -m "chore: self mutation"
           git push origin HEAD:$PULL_REQUEST_REF
   deploy_to_Dev:
-    needs: release_github
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -144,6 +144,57 @@ jobs:
           role-session-name: DevSession
       - name: Deployment to Dev
         run: pnpm deploy:Dev
+  deploy_to_Test:
+    needs: deploy_to_Dev
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      deployments: read
+      id-token: write
+      issues: write
+    if: "! needs.build.outputs.self_mutation_happened"
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: dist
+      - name: Restore build artifact permissions
+        run: cd dist && setfacl --restore=permissions-backup.acl
+        continue-on-error: true
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Get latest tag
+        id: get_tag
+        run: |-
+          CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ env.CURRENT_TAG }}
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: "9"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14.18.1
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+      - name: Assume AWS Role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: role
+          aws-region: us-east-1
+          role-session-name: TestSession
+      - name: Deployment to Test
+        run: pnpm deploy:Test
 "
 `;
 
@@ -234,8 +285,63 @@ jobs:
           GITHUB_REPOSITORY: \${{ github.repository }}
           GITHUB_REF: \${{ github.sha }}
         run: errout=$(mktemp); gh release create $(cat dist/releasetag.txt) -R $GITHUB_REPOSITORY -F dist/changelog.md -t $(cat dist/releasetag.txt) --target $GITHUB_REF 2> $errout && true; exitcode=$?; if [ $exitcode -ne 0 ] && ! grep -q "Release.tag_name already exists" $errout; then cat $errout; exit $exitcode; fi
-  deploy_to_Prod:
+  deploy_to_Uat:
     needs: release_github
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      deployments: read
+      id-token: write
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Get latest tag
+        id: get_tag
+        run: |-
+          CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ env.CURRENT_TAG }}
+          fetch-depth: 0
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: \${{ secrets.APP_ID }}
+          private_key: \${{ secrets.APP_PRIVATE_KEY }}
+      - name: Wait for approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: \${{ steps.generate_token.outputs.token }}
+          minimum-approvals: 1
+          issue-title: Deployment approval for \${{ env.CURRENT_TAG }} to Uat
+          issue-body: Please approve or deny the deployment of version \${{ env.CURRENT_TAG }} toNaN
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: "9"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14.18.1
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+      - name: Assume AWS Role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: role2
+          aws-region: us-east-1
+          role-session-name: UatSession
+      - name: Deployment to Uat
+        run: pnpm deploy:Uat
+  deploy_to_Prod:
+    needs: deploy_to_Uat
     runs-on: ubuntu-latest
     permissions:
       contents: write

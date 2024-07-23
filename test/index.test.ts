@@ -18,7 +18,7 @@ describe('No stack pattern', () => {
   const project = new DeployableCdkApplication({
     name: 'my-test-app',
     defaultReleaseBranch: 'main',
-    cdkVersion: '1.129.0',
+    cdkVersion: '1.49.0',
     workflowNodeVersion: '14.18.1',
     outdir: mkdtemp(),
     releaseConfigs: [{
@@ -27,6 +27,21 @@ describe('No stack pattern', () => {
       roleToAssume: 'role',
       region: 'us-east-1',
       workflowName: 'build',
+    },
+    {
+      accountType: 'Test',
+      deploymentMethod: 'change-set',
+      roleToAssume: 'role',
+      region: 'us-east-1',
+      workflowName: 'build',
+    },
+    {
+      accountType: 'Uat',
+      deploymentMethod: 'prepare-change-set',
+      roleToAssume: 'role2',
+      region: 'us-east-1',
+      deploymentTag: 'v1.0.0',
+      manualApprovalRequired: true,
     },
     {
       accountType: 'Prod',
