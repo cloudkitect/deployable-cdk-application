@@ -20,6 +20,7 @@ describe('No stack pattern', () => {
     defaultReleaseBranch: 'main',
     cdkVersion: '1.49.0',
     workflowNodeVersion: '14.18.1',
+    projenrcTs: true,
     outdir: mkdtemp(),
     releaseConfigs: [{
       accountType: 'Dev',

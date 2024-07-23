@@ -4,68 +4,68 @@ import { Job, JobPermission, JobStep } from 'projen/lib/github/workflows-model';
 import { NodePackageManager, NodeProject } from 'projen/lib/javascript';
 
 export type DeploymentMethod = 'direct' | 'change-set' | 'prepare-change-set';
-export type AccountType = 'Dev' | 'Test' | 'QA' | 'Uat' | 'PreProd' | 'Prod' ;
+export type AccountType = 'Dev' | 'Test' | 'QA' | 'Uat' | 'PreProd' | 'Prod';
 
 export interface ReleaseConfig {
   /**
-   * Environment name to deploy to
-   * @example 'Dev' | 'Test' | 'QA' | 'Uat' | 'PreProd' | 'Prod'
-   */
+     * Environment name to deploy to
+     * @example 'Dev' | 'Test' | 'QA' | 'Uat' | 'PreProd' | 'Prod'
+     */
   readonly accountType: AccountType | string;
   /**
-   * ARN of AWS role to be assumed
-   * @example arn:aws:iam::ACCOUNTID:role/ROLENAME
-   */
+     * ARN of AWS role to be assumed
+     * @example arn:aws:iam::ACCOUNTID:role/ROLENAME
+     */
   readonly roleToAssume: string;
   /**
-   * Default AWS region for the account
-   * @example "us-east-1"
-   */
+     * Default AWS region for the account
+     * @example "us-east-1"
+     */
   readonly region: string;
   /**
-   * Deploy method
-   * @example 'direct' | 'change-set' | 'prepare-change-set'
-   * @default 'change-set'
-   */
+     * Deploy method
+     * @example 'direct' | 'change-set' | 'prepare-change-set'
+     * @default 'change-set'
+     */
   readonly deploymentMethod?: DeploymentMethod;
   /**
-   * Duration of assume role session
-   * @default 900
-   */
+     * Duration of assume role session
+     * @default 900
+     */
   readonly assumeRoleDurationInSeconds?: number;
   /**
-   * Hotswap deployment
-   * @default false
-   */
+     * Hotswap deployment
+     * @default false
+     */
   readonly hotswap?: boolean;
   /**
-   * Is manual approval required for deployments
-   * @default false
-   */
+     * Is manual approval required for deployments
+     * @default false
+     */
   readonly manualApprovalRequired?: boolean;
   /**
-   * Comma separated list of github usernames who need to approve the deployments
-   */
+     * Comma separated list of github usernames who need to approve the deployments
+     */
   readonly approvers?: string;
   /**
-   * Deployment tag in the form of v1.0.0
-   * @default latest tag
-   */
+     * Deployment tag in the form of v1.0.0
+     * @default latest tag
+     */
   readonly deploymentTag?: string;
   /**
-   * Pre deployment job steps
-   */
+     * Pre deployment job steps
+     */
   readonly preDeploymentSteps?: JobStep[];
   /**
-   * Post deployment job steps
-   */
+     * Post deployment job steps
+     */
   readonly postDeploymentSteps?: JobStep[];
 
   /**
-   * Workflow name where the deployment job should be added.
-   * Must be either release or build
-   * @default release
-   */
+     * Workflow name where the deployment job should be added.
+     * Must be either release or build
+     * @default release
+     */
   readonly workflowName?: string;
 }
 
@@ -74,12 +74,12 @@ export interface ReleaseConfig {
  */
 export interface DeployableCdkApplicationOptions extends AwsCdkTypeScriptAppOptions {
   /**
-   * Stack Pattern representing stacks to be deployed
-   */
+     * Stack Pattern representing stacks to be deployed
+     */
   readonly stackPattern?: string;
   /**
-   * List of release configurations, this will specify environment specific release configurations.
-   */
+     * List of release configurations, this will specify environment specific release configurations.
+     */
   readonly releaseConfigs: ReleaseConfig[];
 
 }
@@ -128,7 +128,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       ],
     });
     this.releaseConfigs = options.releaseConfigs ?? [];
-    this.deploymentTasks=[];
+    this.deploymentTasks = [];
     this.addDevDeps('@cloudkitect/deployable-cdk-app');
     this.createDeploymentTasks(options);
   }
@@ -162,54 +162,60 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   buildDeploymentJobs() {
-    let buildDeploymentNeeds = ['build'];
-    let releaseDeploymentNeeds = ['release_github'];
-    this.releaseConfigs.forEach((releaseConfig) => {
-      const jobDefinition: Job = {
-        runsOn: ['ubuntu-latest'],
-        needs: releaseConfig.workflowName == 'build' ? buildDeploymentNeeds : releaseDeploymentNeeds,
-        permissions: {
-          contents: JobPermission.WRITE,
-          deployments: JobPermission.READ,
-          idToken: JobPermission.WRITE,
-          issues: JobPermission.WRITE,
-        },
-        steps: [],
-      };
+    let releaseDependency = ['release_github'];
 
-      jobDefinition.steps.push(this.checkoutStep('main'));
+    this.releaseConfigs.forEach((releaseConfig) => {
       if (releaseConfig.workflowName == 'build') {
-        jobDefinition.steps.push(this.checkoutStep('${{ github.event.pull_request.head.ref }}'));
+        this.addDeployStepsToBuildWorkflow(releaseConfig);
       } else {
-        jobDefinition.steps.push(this.latestTag(releaseConfig));
-        jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
+        const jobName = this.addDeploymentJobsToReleaseWorkflow(releaseConfig, releaseDependency);
+        releaseDependency = [jobName];
       }
-      if (releaseConfig.manualApprovalRequired) {
-        jobDefinition.steps.push(this.generateToken());
-        jobDefinition.steps.push(this.manualApprovalStep(releaseConfig));
-      }
-      jobDefinition.steps.push(...(this.package.project as NodeProject).renderWorkflowSetup());
-      jobDefinition.steps.push(this.awsCredentials(releaseConfig));
-      const preDeploymentSteps = releaseConfig.preDeploymentSteps ?? [];
-      for (const steps of preDeploymentSteps) {
-        jobDefinition.steps.push(steps);
-      }
-      jobDefinition.steps.push(this.deploymentStep(this.package.packageManager, releaseConfig));
-      const postDeploymentSteps = releaseConfig.postDeploymentSteps ?? [];
-      for (const steps of postDeploymentSteps) {
-        jobDefinition.steps.push(steps);
-      }
-      let jobName = `deploy_to_${releaseConfig.accountType}`;
-      const job: Record<string, Job> = {};
-      job[jobName] = jobDefinition;
-      if (releaseConfig.workflowName == 'build') {
-        this.buildWorkflow?.addPostBuildJob(jobName, jobDefinition);
-        buildDeploymentNeeds = [jobName];
-      } else {
-        this.release?.addJobs(job);
-        releaseDeploymentNeeds = [jobName];
-      }
+
     });
+  }
+
+  addDeployStepsToBuildWorkflow(releaseConfig: ReleaseConfig) {
+    this.buildWorkflow?.addPostBuildSteps(this.awsCredentials(releaseConfig));
+    this.buildWorkflow?.addPostBuildSteps(this.deploymentStep(this.package.packageManager, releaseConfig));
+  }
+
+  addDeploymentJobsToReleaseWorkflow(releaseConfig: ReleaseConfig, dependency: string[]) {
+    const jobDefinition: Job = {
+      runsOn: ['ubuntu-latest'],
+      needs: dependency,
+      permissions: {
+        contents: JobPermission.WRITE,
+        deployments: JobPermission.READ,
+        idToken: JobPermission.WRITE,
+        issues: JobPermission.WRITE,
+      },
+      steps: [],
+    };
+
+    jobDefinition.steps.push(this.checkoutStep('main'));
+    jobDefinition.steps.push(this.latestTag(releaseConfig));
+    jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
+    if (releaseConfig.manualApprovalRequired) {
+      jobDefinition.steps.push(this.generateToken());
+      jobDefinition.steps.push(this.manualApprovalStep(releaseConfig));
+    }
+    jobDefinition.steps.push(...(this.package.project as NodeProject).renderWorkflowSetup());
+    jobDefinition.steps.push(this.awsCredentials(releaseConfig));
+    const preDeploymentSteps = releaseConfig.preDeploymentSteps ?? [];
+    for (const steps of preDeploymentSteps) {
+      jobDefinition.steps.push(steps);
+    }
+    jobDefinition.steps.push(this.deploymentStep(this.package.packageManager, releaseConfig));
+    const postDeploymentSteps = releaseConfig.postDeploymentSteps ?? [];
+    for (const steps of postDeploymentSteps) {
+      jobDefinition.steps.push(steps);
+    }
+    let jobName = `deploy_to_${releaseConfig.accountType}`;
+    const job: Record<string, Job> = {};
+    job[jobName] = jobDefinition;
+    this.release?.addJobs(job);
+    return jobName;
   }
 
   checkoutStep(passedRef: string): JobStep {
@@ -268,17 +274,23 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
         'approvers': releaseConfig.approvers,
         'minimum-approvals': 1,
         'issue-title': 'Deployment approval for ${{ env.CURRENT_TAG }} to ' + releaseConfig.accountType,
-        'issue-body': 'Please approve or deny the deployment of version ${{ env.CURRENT_TAG }} to' + + releaseConfig.accountType,
+        'issue-body': 'Please approve or deny the deployment of version ${{ env.CURRENT_TAG }} to' + +releaseConfig.accountType,
       },
     };
   }
 
   packageManagerCommand(packageManager: NodePackageManager): string {
-    if (packageManager === NodePackageManager.NPM) {return 'npm run';}
+    if (packageManager === NodePackageManager.NPM) {
+      return 'npm run';
+    }
 
-    if (packageManager === NodePackageManager.YARN_CLASSIC) {return 'yarn';}
+    if (packageManager === NodePackageManager.YARN_CLASSIC) {
+      return 'yarn';
+    }
 
-    if (packageManager === NodePackageManager.PNPM) {return 'pnpm';}
+    if (packageManager === NodePackageManager.PNPM) {
+      return 'pnpm';
+    }
 
     throw new Error(`Invalid package manager selected (${packageManager})`);
   }
