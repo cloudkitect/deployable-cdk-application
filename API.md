@@ -906,8 +906,8 @@ When given a project, this it the project itself.
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.cdkDeps">cdkDeps</a></code> | <code>projen.awscdk.AwsCdkDeps</code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.cdkTasks">cdkTasks</a></code> | <code>projen.awscdk.CdkTasks</code> | Common CDK tasks. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.cdkVersion">cdkVersion</a></code> | <code>string</code> | The CDK version this app is using. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.deploymentTasks">deploymentTasks</a></code> | <code>projen.Task[]</code> | *No description.* |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.releaseConfigs">releaseConfigs</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>[]</code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.deploymentTasks">deploymentTasks</a></code> | <code>projen.Task[]</code> | Deployment tasks created for this application. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.releaseConfigs">releaseConfigs</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>[]</code> | Release configurations used for this application. |
 
 ---
 
@@ -1723,6 +1723,8 @@ public readonly deploymentTasks: Task[];
 
 - *Type:* projen.Task[]
 
+Deployment tasks created for this application.
+
 ---
 
 ##### `releaseConfigs`<sup>Required</sup> <a name="releaseConfigs" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.releaseConfigs"></a>
@@ -1732,6 +1734,8 @@ public readonly releaseConfigs: ReleaseConfig[];
 ```
 
 - *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>[]
+
+Release configurations used for this application.
 
 ---
 
@@ -4351,6 +4355,8 @@ Stack Pattern representing stacks to be deployed.
 ---
 
 ### ReleaseConfig <a name="ReleaseConfig" id="@cloudkitect/deployable-cdk-app.ReleaseConfig"></a>
+
+Release configuration.
 
 #### Initializer <a name="Initializer" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.Initializer"></a>
 
