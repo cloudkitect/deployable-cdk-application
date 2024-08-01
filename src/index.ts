@@ -1,5 +1,6 @@
 import { Task } from 'projen';
 import { AwsCdkTypeScriptApp, AwsCdkTypeScriptAppOptions } from 'projen/lib/awscdk';
+import { GithubWorkflow } from 'projen/lib/github';
 import { Job, JobPermission, JobStep } from 'projen/lib/github/workflows-model';
 import { NodePackageManager, NodeProject } from 'projen/lib/javascript';
 
@@ -48,19 +49,9 @@ export interface ReleaseConfig {
      */
   readonly hotswap?: boolean;
   /**
-     * Is manual approval required for deployments
-     * @default false
-     */
-  readonly manualApprovalRequired?: boolean;
-  /**
      * Comma separated list of github usernames who need to approve the deployments
      */
   readonly approvers?: string;
-  /**
-     * Deployment tag in the form of v1.0.0
-     * @default latest tag
-     */
-  readonly deploymentTag?: string;
   /**
      * Pre deployment job steps
      */
@@ -69,13 +60,12 @@ export interface ReleaseConfig {
      * Post deployment job steps
      */
   readonly postDeploymentSteps?: JobStep[];
-
   /**
-     * Workflow name where the deployment job should be added.
-     * Must be either release or build
+     * Workflow type where the deployment job should be added.
+     * Must be either release, build or manual
      * @default release
      */
-  readonly workflowName?: string;
+  readonly workflowType?: string;
 }
 
 /**
@@ -89,24 +79,23 @@ export interface DeployableCdkApplicationOptions extends AwsCdkTypeScriptAppOpti
   /**
      * List of release configurations, this will specify environment specific release configurations.
      */
-  readonly releaseConfigs: ReleaseConfig[];
-
+  readonly releaseConfigs?: ReleaseConfig[];
 }
 
 /**
  * Deployable cdk application
  * Uses PNPM package manager by default
- * It also created deployment tasks for each environment
+ * It also creates deployment tasks for each environment
  */
 export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
   /**
-   * Deployment tasks created for this application
-   */
+     * Deployment tasks created for this application
+     */
   readonly deploymentTasks: Task[];
   /**
-   * Release configurations used for this application
-   */
+     * Release configurations used for this application
+     */
   readonly releaseConfigs: ReleaseConfig[];
 
   constructor(options: DeployableCdkApplicationOptions) {
@@ -155,12 +144,27 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   synth() {
-    this.buildDeploymentJobs();
+    this.buildDeploymentStages();
     super.synth();
   }
 
-  createDeploymentTasks(options: DeployableCdkApplicationOptions) {
+  buildDeploymentStages() {
+    let releaseDependency = ['release_github'];
+    this.releaseConfigs.forEach((releaseConfig) => {
+      if (releaseConfig.workflowType == 'build') {
+        this.addDeploymentStageToBuildWorkflow(releaseConfig);
+      } else if (releaseConfig.workflowType == 'manual') {
+        this.createManuallyApprovedWorkflowForDeploymentStage(releaseConfig);
+      } else if (releaseConfig.workflowType == 'release') {
+        const jobName = this.addDeploymentStageToReleaseWorkflow(releaseConfig, releaseDependency);
+        releaseDependency = [jobName];
+      } else {
+        throw new TypeError('Unsupported workflowType: use build, release or manual');
+      }
+    });
+  }
 
+  createDeploymentTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const deployCommand = this.buildDeployCommand(releaseConfig, options.stackPattern);
       const taskName = `deploy:${releaseConfig.accountType}`;
@@ -182,26 +186,61 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     return command;
   }
 
-  buildDeploymentJobs() {
-    let releaseDependency = ['release_github'];
-
-    this.releaseConfigs.forEach((releaseConfig) => {
-      if (releaseConfig.workflowName == 'build') {
-        this.addDeployStepsToBuildWorkflow(releaseConfig);
-      } else {
-        const jobName = this.addDeploymentJobsToReleaseWorkflow(releaseConfig, releaseDependency);
-        releaseDependency = [jobName];
-      }
-
+  createManuallyApprovedWorkflowForDeploymentStage(releaseConfig: ReleaseConfig): GithubWorkflow | undefined {
+    const workflowName = `${releaseConfig.accountType.toLowerCase()}-deployment-workflow`;
+    const deploymentWorkflow = this.github?.addWorkflow(workflowName);
+    deploymentWorkflow?.on({
+      workflowDispatch: {
+        tag: {
+          description: `Tag to deploy to env: ${releaseConfig.accountType}`,
+          required: true,
+        },
+      },
     });
+    this.addDeploymentJob(releaseConfig, deploymentWorkflow);
+
+    return deploymentWorkflow;
   }
 
-  addDeployStepsToBuildWorkflow(releaseConfig: ReleaseConfig) {
+  addDeploymentStageToBuildWorkflow(releaseConfig: ReleaseConfig) {
     this.buildWorkflow?.addPostBuildSteps(this.awsCredentials(releaseConfig));
     this.buildWorkflow?.addPostBuildSteps(this.deploymentStep(this.package.packageManager, releaseConfig));
   }
 
-  addDeploymentJobsToReleaseWorkflow(releaseConfig: ReleaseConfig, dependency: string[]) {
+  addDeploymentJob(releaseConfig: ReleaseConfig, workflow?: GithubWorkflow) {
+    const jobDefinition: Job = {
+      runsOn: ['ubuntu-latest'],
+      permissions: {
+        contents: JobPermission.WRITE,
+        deployments: JobPermission.READ,
+        idToken: JobPermission.WRITE,
+        issues: JobPermission.WRITE,
+      },
+      steps: [],
+    };
+
+    jobDefinition.steps.push(this.checkoutStep('main'));
+    jobDefinition.steps.push(this.latestTag());
+    jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
+    jobDefinition.steps.push(...(this.package.project as NodeProject).renderWorkflowSetup());
+    jobDefinition.steps.push(this.awsCredentials(releaseConfig));
+    const preDeploymentSteps = releaseConfig.preDeploymentSteps ?? [];
+    for (const steps of preDeploymentSteps) {
+      jobDefinition.steps.push(steps);
+    }
+    jobDefinition.steps.push(this.deploymentStep(this.package.packageManager, releaseConfig));
+    const postDeploymentSteps = releaseConfig.postDeploymentSteps ?? [];
+    for (const steps of postDeploymentSteps) {
+      jobDefinition.steps.push(steps);
+    }
+    let jobName = `deploy_to_${releaseConfig.accountType}`;
+    const job: Record<string, Job> = {};
+    job[jobName] = jobDefinition;
+    workflow?.addJobs(job);
+    return jobName;
+  }
+
+  addDeploymentStageToReleaseWorkflow(releaseConfig: ReleaseConfig, dependency: string[]) {
     const jobDefinition: Job = {
       runsOn: ['ubuntu-latest'],
       needs: dependency,
@@ -215,12 +254,8 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     };
 
     jobDefinition.steps.push(this.checkoutStep('main'));
-    jobDefinition.steps.push(this.latestTag(releaseConfig));
+    jobDefinition.steps.push(this.latestTag());
     jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
-    if (releaseConfig.manualApprovalRequired) {
-      jobDefinition.steps.push(this.generateToken());
-      jobDefinition.steps.push(this.manualApprovalStep(releaseConfig));
-    }
     jobDefinition.steps.push(...(this.package.project as NodeProject).renderWorkflowSetup());
     jobDefinition.steps.push(this.awsCredentials(releaseConfig));
     const preDeploymentSteps = releaseConfig.preDeploymentSteps ?? [];
@@ -276,13 +311,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     };
   }
 
-  latestTag(releaseConfig: ReleaseConfig): JobStep {
-    let tagCommand = releaseConfig.deploymentTag ?? '$(git describe --tags --abbrev=0 2>/dev/null)';
-    console.log(tagCommand);
+  latestTag(): JobStep {
+    const runCommand = 'if [ -z "${{ github.event.inputs.tag }}" ]; then \n CURRENT_TAG=$(git describe --tags $(git rev-list --tags --max-count=1)) \n echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV \nelse \n echo "CURRENT_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV \nfi';
     return {
-      name: 'Get latest tag',
+      name: 'Get tag',
       id: 'get_tag',
-      run: 'CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null)\necho "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV',
+      run: runCommand,
     };
   }
 
@@ -322,5 +356,4 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       run: `${this.packageManagerCommand(packageManager)} deploy:${releaseConfig.accountType}`,
     };
   }
-
 }
