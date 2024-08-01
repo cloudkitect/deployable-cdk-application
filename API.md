@@ -4,7 +4,7 @@
 
 ### DeployableCdkApplication <a name="DeployableCdkApplication" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication"></a>
 
-Deployable cdk application Uses PNPM package manager by default It also created deployment tasks for each environment.
+Deployable cdk application Uses PNPM package manager by default It also creates deployment tasks for each environment.
 
 #### Initializers <a name="Initializers" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.Initializer"></a>
 
@@ -61,13 +61,15 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.renderWorkflowSetup">renderWorkflowSetup</a></code> | Returns the set of workflow steps which should be executed to bootstrap a workflow. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.setScript">setScript</a></code> | Replaces the contents of an npm package.json script. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addCdkDependency">addCdkDependency</a></code> | Adds an AWS CDK module dependencies. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJobsToReleaseWorkflow">addDeploymentJobsToReleaseWorkflow</a></code> | *No description.* |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeployStepsToBuildWorkflow">addDeployStepsToBuildWorkflow</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJob">addDeploymentJob</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentStageToBuildWorkflow">addDeploymentStageToBuildWorkflow</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentStageToReleaseWorkflow">addDeploymentStageToReleaseWorkflow</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.awsCredentials">awsCredentials</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeployCommand">buildDeployCommand</a></code> | *No description.* |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentJobs">buildDeploymentJobs</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentStages">buildDeploymentStages</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.checkoutStep">checkoutStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createDeploymentTasks">createDeploymentTasks</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createManuallyApprovedWorkflowForDeploymentStage">createManuallyApprovedWorkflowForDeploymentStage</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.deploymentStep">deploymentStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.generateToken">generateToken</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag">latestTag</a></code> | *No description.* |
@@ -609,33 +611,51 @@ The list of modules to depend on.
 
 ---
 
-##### `addDeploymentJobsToReleaseWorkflow` <a name="addDeploymentJobsToReleaseWorkflow" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJobsToReleaseWorkflow"></a>
+##### `addDeploymentJob` <a name="addDeploymentJob" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJob"></a>
 
 ```typescript
-public addDeploymentJobsToReleaseWorkflow(releaseConfig: ReleaseConfig, dependency: string[]): string
+public addDeploymentJob(releaseConfig: ReleaseConfig, workflow?: GithubWorkflow): string
 ```
 
-###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJobsToReleaseWorkflow.parameter.releaseConfig"></a>
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJob.parameter.releaseConfig"></a>
 
 - *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
 
 ---
 
-###### `dependency`<sup>Required</sup> <a name="dependency" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJobsToReleaseWorkflow.parameter.dependency"></a>
+###### `workflow`<sup>Optional</sup> <a name="workflow" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentJob.parameter.workflow"></a>
+
+- *Type:* projen.github.GithubWorkflow
+
+---
+
+##### `addDeploymentStageToBuildWorkflow` <a name="addDeploymentStageToBuildWorkflow" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentStageToBuildWorkflow"></a>
+
+```typescript
+public addDeploymentStageToBuildWorkflow(releaseConfig: ReleaseConfig): void
+```
+
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentStageToBuildWorkflow.parameter.releaseConfig"></a>
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
+
+---
+
+##### `addDeploymentStageToReleaseWorkflow` <a name="addDeploymentStageToReleaseWorkflow" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentStageToReleaseWorkflow"></a>
+
+```typescript
+public addDeploymentStageToReleaseWorkflow(releaseConfig: ReleaseConfig, dependency: string[]): string
+```
+
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentStageToReleaseWorkflow.parameter.releaseConfig"></a>
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
+
+---
+
+###### `dependency`<sup>Required</sup> <a name="dependency" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeploymentStageToReleaseWorkflow.parameter.dependency"></a>
 
 - *Type:* string[]
-
----
-
-##### `addDeployStepsToBuildWorkflow` <a name="addDeployStepsToBuildWorkflow" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeployStepsToBuildWorkflow"></a>
-
-```typescript
-public addDeployStepsToBuildWorkflow(releaseConfig: ReleaseConfig): void
-```
-
-###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addDeployStepsToBuildWorkflow.parameter.releaseConfig"></a>
-
-- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
 
 ---
 
@@ -669,10 +689,10 @@ public buildDeployCommand(releaseConfig: ReleaseConfig, stackPattern?: string): 
 
 ---
 
-##### `buildDeploymentJobs` <a name="buildDeploymentJobs" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentJobs"></a>
+##### `buildDeploymentStages` <a name="buildDeploymentStages" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentStages"></a>
 
 ```typescript
-public buildDeploymentJobs(): void
+public buildDeploymentStages(): void
 ```
 
 ##### `checkoutStep` <a name="checkoutStep" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.checkoutStep"></a>
@@ -696,6 +716,18 @@ public createDeploymentTasks(options: DeployableCdkApplicationOptions): void
 ###### `options`<sup>Required</sup> <a name="options" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createDeploymentTasks.parameter.options"></a>
 
 - *Type:* <a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions">DeployableCdkApplicationOptions</a>
+
+---
+
+##### `createManuallyApprovedWorkflowForDeploymentStage` <a name="createManuallyApprovedWorkflowForDeploymentStage" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createManuallyApprovedWorkflowForDeploymentStage"></a>
+
+```typescript
+public createManuallyApprovedWorkflowForDeploymentStage(releaseConfig: ReleaseConfig): GithubWorkflow
+```
+
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createManuallyApprovedWorkflowForDeploymentStage.parameter.releaseConfig"></a>
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
 
 ---
 
@@ -726,14 +758,8 @@ public generateToken(): JobStep
 ##### `latestTag` <a name="latestTag" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag"></a>
 
 ```typescript
-public latestTag(releaseConfig: ReleaseConfig): JobStep
+public latestTag(): JobStep
 ```
-
-###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag.parameter.releaseConfig"></a>
-
-- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
-
----
 
 ##### `manualApprovalStep` <a name="manualApprovalStep" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualApprovalStep"></a>
 
@@ -4330,7 +4356,7 @@ Common options for all AWS Lambda functions.
 
 ---
 
-##### `releaseConfigs`<sup>Required</sup> <a name="releaseConfigs" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseConfigs"></a>
+##### `releaseConfigs`<sup>Optional</sup> <a name="releaseConfigs" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseConfigs"></a>
 
 ```typescript
 public readonly releaseConfigs: ReleaseConfig[];
@@ -4376,12 +4402,10 @@ const releaseConfig: ReleaseConfig = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.approvers">approvers</a></code> | <code>string</code> | Comma separated list of github usernames who need to approve the deployments. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.assumeRoleDurationInSeconds">assumeRoleDurationInSeconds</a></code> | <code>number</code> | Duration of assume role session. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentMethod">deploymentMethod</a></code> | <code>string</code> | Deploy method. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentTag">deploymentTag</a></code> | <code>string</code> | Deployment tag in the form of v1.0.0. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.hotswap">hotswap</a></code> | <code>boolean</code> | Hotswap deployment. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.manualApprovalRequired">manualApprovalRequired</a></code> | <code>boolean</code> | Is manual approval required for deployments. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.postDeploymentSteps">postDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Post deployment job steps. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.preDeploymentSteps">preDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Pre deployment job steps. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.workflowName">workflowName</a></code> | <code>string</code> | Workflow name where the deployment job should be added. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.workflowType">workflowType</a></code> | <code>string</code> | Workflow type where the deployment job should be added. |
 
 ---
 
@@ -4487,19 +4511,6 @@ Deploy method.
 ```
 
 
-##### `deploymentTag`<sup>Optional</sup> <a name="deploymentTag" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentTag"></a>
-
-```typescript
-public readonly deploymentTag: string;
-```
-
-- *Type:* string
-- *Default:* latest tag
-
-Deployment tag in the form of v1.0.0.
-
----
-
 ##### `hotswap`<sup>Optional</sup> <a name="hotswap" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.hotswap"></a>
 
 ```typescript
@@ -4510,19 +4521,6 @@ public readonly hotswap: boolean;
 - *Default:* false
 
 Hotswap deployment.
-
----
-
-##### `manualApprovalRequired`<sup>Optional</sup> <a name="manualApprovalRequired" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.manualApprovalRequired"></a>
-
-```typescript
-public readonly manualApprovalRequired: boolean;
-```
-
-- *Type:* boolean
-- *Default:* false
-
-Is manual approval required for deployments.
 
 ---
 
@@ -4550,18 +4548,18 @@ Pre deployment job steps.
 
 ---
 
-##### `workflowName`<sup>Optional</sup> <a name="workflowName" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.workflowName"></a>
+##### `workflowType`<sup>Optional</sup> <a name="workflowType" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.workflowType"></a>
 
 ```typescript
-public readonly workflowName: string;
+public readonly workflowType: string;
 ```
 
 - *Type:* string
 - *Default:* release
 
-Workflow name where the deployment job should be added.
+Workflow type where the deployment job should be added.
 
-Must be either release or build
+Must be either release, build or manual
 
 ---
 

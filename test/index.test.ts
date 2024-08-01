@@ -12,6 +12,8 @@ function mkdtemp() {
 }
 
 const releaseWorkflowFilePath = '.github/workflows/release.yml';
+const deployToProdWorkflowFilePath = '.github/workflows/prod-deployment-workflow.yml';
+const deployToUatWorkflowFilePath = '.github/workflows/uat-deployment-workflow.yml';
 const buildWorkflowFilePath = '.github/workflows/build.yml';
 
 describe('No stack pattern', () => {
@@ -27,35 +29,39 @@ describe('No stack pattern', () => {
       deploymentMethod: 'change-set',
       roleToAssume: 'role',
       region: 'us-east-1',
-      workflowName: 'build',
+      workflowType: 'build',
     },
     {
       accountType: 'Test',
       deploymentMethod: 'change-set',
       roleToAssume: 'role',
       region: 'us-east-1',
-      workflowName: 'build',
+      workflowType: 'release',
     },
     {
       accountType: 'Uat',
       deploymentMethod: 'prepare-change-set',
       roleToAssume: 'role2',
       region: 'us-east-1',
-      deploymentTag: 'v1.0.0',
-      manualApprovalRequired: true,
+      workflowType: 'manual',
     },
     {
       accountType: 'Prod',
       deploymentMethod: 'prepare-change-set',
       roleToAssume: 'role2',
       region: 'us-east-1',
-      deploymentTag: 'v1.0.0',
-      manualApprovalRequired: true,
+      workflowType: 'manual',
     }],
   });
   const synthOutput = synthSnapshot(project);
   test('release workflow', () => {
     expect(synthOutput[releaseWorkflowFilePath]).toMatchSnapshot();
+  });
+  test('deploy to uat workflow', () => {
+    expect(synthOutput[deployToUatWorkflowFilePath]).toMatchSnapshot();
+  });
+  test('deploy to prod workflow', () => {
+    expect(synthOutput[deployToProdWorkflowFilePath]).toMatchSnapshot();
   });
   test('build workflow', () => {
     expect(synthOutput[buildWorkflowFilePath]).toMatchSnapshot();
