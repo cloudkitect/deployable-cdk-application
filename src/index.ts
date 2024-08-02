@@ -191,9 +191,11 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     const deploymentWorkflow = this.github?.addWorkflow(workflowName);
     deploymentWorkflow?.on({
       workflowDispatch: {
-        tag: {
-          description: `Tag to deploy to env: ${releaseConfig.accountType}`,
-          required: true,
+        inputs: {
+          tag: {
+            description: `Version tag to deploy to ${releaseConfig.accountType}`,
+            required: true,
+          },
         },
       },
     });

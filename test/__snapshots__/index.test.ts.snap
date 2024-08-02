@@ -102,9 +102,10 @@ exports[`No stack pattern deploy to prod workflow 1`] = `
 name: prod-deployment-workflow
 on:
   workflow_dispatch:
-    tag:
-      description: "Tag to deploy to env: Prod"
-      required: true
+    inputs:
+      tag:
+        description: Version tag to deploy to Prod
+        required: true
 jobs:
   deploy_to_Prod:
     runs-on: ubuntu-latest
@@ -160,9 +161,10 @@ exports[`No stack pattern deploy to uat workflow 1`] = `
 name: uat-deployment-workflow
 on:
   workflow_dispatch:
-    tag:
-      description: "Tag to deploy to env: Uat"
-      required: true
+    inputs:
+      tag:
+        description: Version tag to deploy to Uat
+        required: true
 jobs:
   deploy_to_Uat:
     runs-on: ubuntu-latest
