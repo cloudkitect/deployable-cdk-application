@@ -15,10 +15,12 @@ const project = new cdk.JsiiProject({
   description: 'CloudKitect deployable cdk application',
   keywords: [
     'CloudKitect',
-    'PDK',
+    'CloudKitect Inc',
+    'CloudKitect Inc',
     'Typescript',
     'projen',
     'Deployment',
+    'CDK pipeline',
     'AWS CDK',
     'Release CDK App',
   ],

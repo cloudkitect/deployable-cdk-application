@@ -4,7 +4,7 @@
 
 ### DeployableCdkApplication <a name="DeployableCdkApplication" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication"></a>
 
-Deployable cdk application Uses PNPM package manager by default It also creates deployment tasks for each environment.
+Deployable cdk application Uses PNPM package manager by default It also creates deploy and synth tasks for each environment.
 
 #### Initializers <a name="Initializers" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.Initializer"></a>
 
@@ -67,9 +67,11 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.awsCredentials">awsCredentials</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeployCommand">buildDeployCommand</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentStages">buildDeploymentStages</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildSynthCommand">buildSynthCommand</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.checkoutStep">checkoutStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createDeploymentTasks">createDeploymentTasks</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createManuallyApprovedWorkflowForDeploymentStage">createManuallyApprovedWorkflowForDeploymentStage</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createSynthTasks">createSynthTasks</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.deploymentStep">deploymentStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.generateToken">generateToken</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag">latestTag</a></code> | *No description.* |
@@ -695,6 +697,24 @@ public buildDeployCommand(releaseConfig: ReleaseConfig, stackPattern?: string): 
 public buildDeploymentStages(): void
 ```
 
+##### `buildSynthCommand` <a name="buildSynthCommand" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildSynthCommand"></a>
+
+```typescript
+public buildSynthCommand(releaseConfig: ReleaseConfig, stackPattern?: string): string
+```
+
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildSynthCommand.parameter.releaseConfig"></a>
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
+
+---
+
+###### `stackPattern`<sup>Optional</sup> <a name="stackPattern" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildSynthCommand.parameter.stackPattern"></a>
+
+- *Type:* string
+
+---
+
 ##### `checkoutStep` <a name="checkoutStep" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.checkoutStep"></a>
 
 ```typescript
@@ -728,6 +748,18 @@ public createManuallyApprovedWorkflowForDeploymentStage(releaseConfig: ReleaseCo
 ###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createManuallyApprovedWorkflowForDeploymentStage.parameter.releaseConfig"></a>
 
 - *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
+
+---
+
+##### `createSynthTasks` <a name="createSynthTasks" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createSynthTasks"></a>
+
+```typescript
+public createSynthTasks(options: DeployableCdkApplicationOptions): void
+```
+
+###### `options`<sup>Required</sup> <a name="options" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createSynthTasks.parameter.options"></a>
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions">DeployableCdkApplicationOptions</a>
 
 ---
 
