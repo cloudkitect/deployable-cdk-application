@@ -85,7 +85,7 @@ export interface DeployableCdkApplicationOptions extends AwsCdkTypeScriptAppOpti
 /**
  * Deployable cdk application
  * Uses PNPM package manager by default
- * It also creates deployment tasks for each environment
+ * It also creates deploy and synth tasks for each environment
  */
 export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
@@ -140,6 +140,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     this.releaseConfigs = options.releaseConfigs ?? [];
     this.deploymentTasks = [];
     this.addDevDeps('@cloudkitect/deployable-cdk-app');
+    this.createSynthTasks(options);
     this.createDeploymentTasks(options);
   }
 
@@ -173,6 +174,23 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       });
       this.deploymentTasks.push(task);
     }
+  }
+
+  createSynthTasks(options: DeployableCdkApplicationOptions) {
+    for (let releaseConfig of this.releaseConfigs) {
+      const synthCommand = this.buildSynthCommand(releaseConfig, options.stackPattern);
+      const taskName = `synth:${releaseConfig.accountType}`;
+      this.addTask(taskName, {
+        exec: synthCommand,
+      });
+    }
+  }
+
+  buildSynthCommand(releaseConfig: ReleaseConfig, stackPattern?: string): string {
+    let command = 'cdk synth';
+    command += stackPattern ? ' ' + stackPattern : ' --all';
+    command += ` --context env=${releaseConfig.accountType}`;
+    return command;
   }
 
   buildDeployCommand(releaseConfig: ReleaseConfig, stackPattern?: string): string {
