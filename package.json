@@ -68,9 +68,10 @@
   "pnpm": {},
   "keywords": [
     "AWS CDK",
+    "CDK pipeline",
     "CloudKitect",
+    "CloudKitect Inc",
     "Deployment",
-    "PDK",
     "Release CDK App",
     "Typescript",
     "projen"
