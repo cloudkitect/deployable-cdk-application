@@ -52,6 +52,13 @@ describe('No stack pattern', () => {
       region: 'us-east-1',
       workflowType: 'manual',
     }],
+    codeArtifactConfig: {
+      roleToAssume: 'role',
+      region: 'us-east-1',
+      accountId: '123',
+      repository: 'repo',
+      domain: 'domain',
+    },
   });
   const synthOutput = synthSnapshot(project);
   test('release workflow', () => {

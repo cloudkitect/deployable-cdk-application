@@ -27,6 +27,15 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: "9"
+      - name: Assume AWS Role For CodeArtifact
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: role
+          aws-region: us-east-1
+          role-session-name: CodeArtifactSession
+      - name: Login to AWS CodeArtifact
+        id: login-codeartifact
+        run: aws codeartifact login --tool npm --domain domain --domain-owner 123 --repository repo --region us-east-1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

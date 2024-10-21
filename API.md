@@ -964,6 +964,7 @@ When given a project, this it the project itself.
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.cdkDeps">cdkDeps</a></code> | <code>projen.awscdk.AwsCdkDeps</code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.cdkTasks">cdkTasks</a></code> | <code>projen.awscdk.CdkTasks</code> | Common CDK tasks. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.cdkVersion">cdkVersion</a></code> | <code>string</code> | The CDK version this app is using. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.codeArtifactConfig">codeArtifactConfig</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig">CodeArtifactConfig</a></code> | Code Artifact configuration. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.deploymentTasks">deploymentTasks</a></code> | <code>projen.Task[]</code> | Deployment tasks created for this application. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.releaseConfigs">releaseConfigs</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>[]</code> | Release configurations used for this application. |
 
@@ -1773,6 +1774,18 @@ The CDK version this app is using.
 
 ---
 
+##### `codeArtifactConfig`<sup>Required</sup> <a name="codeArtifactConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.codeArtifactConfig"></a>
+
+```typescript
+public readonly codeArtifactConfig: CodeArtifactConfig;
+```
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig">CodeArtifactConfig</a>
+
+Code Artifact configuration.
+
+---
+
 ##### `deploymentTasks`<sup>Required</sup> <a name="deploymentTasks" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.deploymentTasks"></a>
 
 ```typescript
@@ -1832,6 +1845,125 @@ public readonly DEFAULT_TS_JEST_TRANFORM_PATTERN: string;
 ---
 
 ## Structs <a name="Structs" id="Structs"></a>
+
+### CodeArtifactConfig <a name="CodeArtifactConfig" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig"></a>
+
+Code Artifact for installing NPM packages.
+
+#### Initializer <a name="Initializer" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig.Initializer"></a>
+
+```typescript
+import { CodeArtifactConfig } from '@cloudkitect/deployable-cdk-app'
+
+const codeArtifactConfig: CodeArtifactConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.accountId">accountId</a></code> | <code>string</code> | Code Artifact account id. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.domain">domain</a></code> | <code>string</code> | Code Artifact domain name. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.region">region</a></code> | <code>string</code> | Code Artifact region. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.repository">repository</a></code> | <code>string</code> | Code Artifact repository name. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.roleToAssume">roleToAssume</a></code> | <code>string</code> | ARN of AWS role to be assumed by code artifact. |
+
+---
+
+##### `accountId`<sup>Optional</sup> <a name="accountId" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.accountId"></a>
+
+```typescript
+public readonly accountId: string;
+```
+
+- *Type:* string
+
+Code Artifact account id.
+
+---
+
+*Example*
+
+```typescript
+"123456"
+```
+
+
+##### `domain`<sup>Optional</sup> <a name="domain" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.domain"></a>
+
+```typescript
+public readonly domain: string;
+```
+
+- *Type:* string
+
+Code Artifact domain name.
+
+---
+
+*Example*
+
+```typescript
+"domain"
+```
+
+
+##### `region`<sup>Optional</sup> <a name="region" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.region"></a>
+
+```typescript
+public readonly region: string;
+```
+
+- *Type:* string
+
+Code Artifact region.
+
+---
+
+*Example*
+
+```typescript
+"us-east-1"
+```
+
+
+##### `repository`<sup>Optional</sup> <a name="repository" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.repository"></a>
+
+```typescript
+public readonly repository: string;
+```
+
+- *Type:* string
+
+Code Artifact repository name.
+
+---
+
+*Example*
+
+```typescript
+"my_repo"
+```
+
+
+##### `roleToAssume`<sup>Optional</sup> <a name="roleToAssume" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.roleToAssume"></a>
+
+```typescript
+public readonly roleToAssume: string;
+```
+
+- *Type:* string
+
+ARN of AWS role to be assumed by code artifact.
+
+---
+
+*Example*
+
+```typescript
+arn:aws:iam::ACCOUNTID:role/ROLENAME
+```
+
 
 ### DeployableCdkApplicationOptions <a name="DeployableCdkApplicationOptions" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions"></a>
 
@@ -2016,6 +2148,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.lambdaAutoDiscover">lambdaAutoDiscover</a></code> | <code>boolean</code> | Automatically adds an `awscdk.LambdaFunction` for each `.lambda.ts` handler in your source tree. If this is disabled, you can manually add an `awscdk.AutoDiscover` component to your project. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.lambdaExtensionAutoDiscover">lambdaExtensionAutoDiscover</a></code> | <code>boolean</code> | Automatically adds an `awscdk.LambdaExtension` for each `.lambda-extension.ts` entrypoint in your source tree. If this is disabled, you can manually add an `awscdk.AutoDiscover` component to your project. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.lambdaOptions">lambdaOptions</a></code> | <code>projen.awscdk.LambdaFunctionCommonOptions</code> | Common options for all AWS Lambda functions. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeArtifactConfig">codeArtifactConfig</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig">CodeArtifactConfig</a></code> | If using code artifact for installing packages, provide necessary details. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseConfigs">releaseConfigs</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>[]</code> | List of release configurations, this will specify environment specific release configurations. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.stackPattern">stackPattern</a></code> | <code>string</code> | Stack Pattern representing stacks to be deployed. |
 
@@ -4388,6 +4521,19 @@ Common options for all AWS Lambda functions.
 
 ---
 
+##### `codeArtifactConfig`<sup>Optional</sup> <a name="codeArtifactConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeArtifactConfig"></a>
+
+```typescript
+public readonly codeArtifactConfig: CodeArtifactConfig;
+```
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig">CodeArtifactConfig</a>
+- *Default:* uses public npmjs for installing packages
+
+If using code artifact for installing packages, provide necessary details.
+
+---
+
 ##### `releaseConfigs`<sup>Optional</sup> <a name="releaseConfigs" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseConfigs"></a>
 
 ```typescript
@@ -4429,11 +4575,11 @@ const releaseConfig: ReleaseConfig = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.accountType">accountType</a></code> | <code>string</code> | Environment name to deploy to. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.region">region</a></code> | <code>string</code> | Default AWS region for the account. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.roleToAssume">roleToAssume</a></code> | <code>string</code> | ARN of AWS role to be assumed. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.region">region</a></code> | <code>string</code> | Default AWS region for the account used for deployment. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.roleToAssume">roleToAssume</a></code> | <code>string</code> | ARN of AWS role to be assumed by deployment task. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.approvers">approvers</a></code> | <code>string</code> | Comma separated list of github usernames who need to approve the deployments. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.assumeRoleDurationInSeconds">assumeRoleDurationInSeconds</a></code> | <code>number</code> | Duration of assume role session. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentMethod">deploymentMethod</a></code> | <code>string</code> | Deploy method. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentRoleSessionDuration">deploymentRoleSessionDuration</a></code> | <code>number</code> | Duration of assume role session. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.hotswap">hotswap</a></code> | <code>boolean</code> | Hotswap deployment. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.postDeploymentSteps">postDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Post deployment job steps. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.preDeploymentSteps">preDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Pre deployment job steps. |
@@ -4468,7 +4614,7 @@ public readonly region: string;
 
 - *Type:* string
 
-Default AWS region for the account.
+Default AWS region for the account used for deployment.
 
 ---
 
@@ -4487,7 +4633,7 @@ public readonly roleToAssume: string;
 
 - *Type:* string
 
-ARN of AWS role to be assumed.
+ARN of AWS role to be assumed by deployment task.
 
 ---
 
@@ -4510,19 +4656,6 @@ Comma separated list of github usernames who need to approve the deployments.
 
 ---
 
-##### `assumeRoleDurationInSeconds`<sup>Optional</sup> <a name="assumeRoleDurationInSeconds" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.assumeRoleDurationInSeconds"></a>
-
-```typescript
-public readonly assumeRoleDurationInSeconds: number;
-```
-
-- *Type:* number
-- *Default:* 900
-
-Duration of assume role session.
-
----
-
 ##### `deploymentMethod`<sup>Optional</sup> <a name="deploymentMethod" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentMethod"></a>
 
 ```typescript
@@ -4542,6 +4675,19 @@ Deploy method.
 'direct' | 'change-set' | 'prepare-change-set'
 ```
 
+
+##### `deploymentRoleSessionDuration`<sup>Optional</sup> <a name="deploymentRoleSessionDuration" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentRoleSessionDuration"></a>
+
+```typescript
+public readonly deploymentRoleSessionDuration: number;
+```
+
+- *Type:* number
+- *Default:* 900
+
+Duration of assume role session.
+
+---
 
 ##### `hotswap`<sup>Optional</sup> <a name="hotswap" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.hotswap"></a>
 
