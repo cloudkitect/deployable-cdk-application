@@ -27,6 +27,15 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: "9"
+      - name: Assume AWS Role For CodeArtifact
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: role
+          aws-region: us-east-1
+          role-session-name: CodeArtifactSession
+      - name: Login to AWS CodeArtifact
+        id: login-codeartifact
+        run: aws codeartifact login --tool npm --domain domain --domain-owner 123 --repository repo --region us-east-1
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -47,20 +56,20 @@ jobs:
         id: self_mutation
         run: |-
           git add .
-          git diff --staged --patch --exit-code > .repo.patch || echo "self_mutation_happened=true" >> $GITHUB_OUTPUT
+          git diff --staged --patch --exit-code > repo.patch || echo "self_mutation_happened=true" >> $GITHUB_OUTPUT
         working-directory: ./
       - name: Upload patch
         if: steps.self_mutation.outputs.self_mutation_happened
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
-          name: .repo.patch
-          path: .repo.patch
+          name: repo.patch
+          path: repo.patch
           overwrite: true
       - name: Fail build on mutation
         if: steps.self_mutation.outputs.self_mutation_happened
         run: |-
           echo "::error::Files were changed during build (see build log). If this was triggered from a fork, you will need to update your branch."
-          cat .repo.patch
+          cat repo.patch
           exit 1
   self-mutation:
     needs: build
@@ -78,10 +87,10 @@ jobs:
       - name: Download patch
         uses: actions/download-artifact@v4
         with:
-          name: .repo.patch
+          name: repo.patch
           path: \${{ runner.temp }}
       - name: Apply patch
-        run: '[ -s \${{ runner.temp }}/.repo.patch ] && git apply \${{ runner.temp }}/.repo.patch || echo "Empty patch. Skipping."'
+        run: '[ -s \${{ runner.temp }}/repo.patch ] && git apply \${{ runner.temp }}/repo.patch || echo "Empty patch. Skipping."'
       - name: Set git identity
         run: |-
           git config user.name "github-actions"
@@ -223,6 +232,9 @@ on:
     branches:
       - main
   workflow_dispatch: {}
+concurrency:
+  group: \${{ github.workflow }}
+  cancel-in-progress: false
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -271,7 +283,7 @@ jobs:
         continue-on-error: true
       - name: Upload artifact
         if: \${{ steps.git_remote.outputs.latest_commit == github.sha }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: build-artifact
           path: dist

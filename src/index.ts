@@ -1,4 +1,4 @@
-import { Task } from 'projen';
+import { JsonPatch, Task } from 'projen';
 import { AwsCdkTypeScriptApp, AwsCdkTypeScriptAppOptions } from 'projen/lib/awscdk';
 import { GithubWorkflow } from 'projen/lib/github';
 import { Job, JobPermission, JobStep } from 'projen/lib/github/workflows-model';
@@ -14,6 +14,37 @@ export type DeploymentMethod = 'direct' | 'change-set' | 'prepare-change-set';
 export type AccountType = 'Dev' | 'Test' | 'QA' | 'Uat' | 'PreProd' | 'Prod';
 
 /**
+ * Code Artifact for installing NPM packages
+ */
+export interface CodeArtifactConfig {
+  /**
+     * ARN of AWS role to be assumed by code artifact
+     * @example arn:aws:iam::ACCOUNTID:role/ROLENAME
+     */
+  readonly roleToAssume?: string;
+  /**
+     * Code Artifact region
+     * @example "us-east-1"
+     */
+  readonly region?: string;
+  /**
+     * Code Artifact domain name
+     * @example "domain"
+     */
+  readonly domain?: string;
+  /**
+     * Code Artifact account id
+     * @example "123456"
+     */
+  readonly accountId?: string;
+  /**
+     * Code Artifact repository name
+     * @example "my_repo"
+     */
+  readonly repository?: string;
+}
+
+/**
  * Release configuration
  */
 export interface ReleaseConfig {
@@ -23,26 +54,28 @@ export interface ReleaseConfig {
      */
   readonly accountType: AccountType | string;
   /**
-     * ARN of AWS role to be assumed
+     * ARN of AWS role to be assumed by deployment task
      * @example arn:aws:iam::ACCOUNTID:role/ROLENAME
      */
   readonly roleToAssume: string;
   /**
-     * Default AWS region for the account
+     * Default AWS region for the account used for deployment
      * @example "us-east-1"
      */
   readonly region: string;
+  /**
+     * Duration of assume role session
+     * @default 900
+     */
+  readonly deploymentRoleSessionDuration?: number;
+
   /**
      * Deploy method
      * @example 'direct' | 'change-set' | 'prepare-change-set'
      * @default 'change-set'
      */
   readonly deploymentMethod?: DeploymentMethod;
-  /**
-     * Duration of assume role session
-     * @default 900
-     */
-  readonly assumeRoleDurationInSeconds?: number;
+
   /**
      * Hotswap deployment
      * @default false
@@ -80,6 +113,11 @@ export interface DeployableCdkApplicationOptions extends AwsCdkTypeScriptAppOpti
      * List of release configurations, this will specify environment specific release configurations.
      */
   readonly releaseConfigs?: ReleaseConfig[];
+  /**
+     * If using code artifact for installing packages, provide necessary details.
+     * @default uses public npmjs for installing packages
+     */
+  readonly codeArtifactConfig?: CodeArtifactConfig;
 }
 
 /**
@@ -98,14 +136,20 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
      */
   readonly releaseConfigs: ReleaseConfig[];
 
+  /**
+     * Code Artifact configuration
+     */
+  readonly codeArtifactConfig: CodeArtifactConfig;
+
   constructor(options: DeployableCdkApplicationOptions) {
     super({
       ...options,
-      buildWorkflowOptions: options.buildWorkflowOptions ?? {
+      buildWorkflowOptions: {
         permissions: {
           contents: JobPermission.WRITE,
           idToken: JobPermission.WRITE,
         },
+        ...options.buildWorkflowOptions,
       },
       packageManager: options.packageManager ?? NodePackageManager.PNPM,
       pnpmVersion: options.pnpmVersion ?? '9',
@@ -138,6 +182,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       ],
     });
     this.releaseConfigs = options.releaseConfigs ?? [];
+    this.codeArtifactConfig = options.codeArtifactConfig ?? {};
     this.deploymentTasks = [];
     this.addDevDeps('@cloudkitect/deployable-cdk-app');
     this.createSynthTasks(options);
@@ -223,6 +268,27 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   addDeploymentStageToBuildWorkflow(releaseConfig: ReleaseConfig) {
+
+    if (this.codeArtifactConfig.roleToAssume) {
+      const awsLogin = {
+        name: 'Assume AWS Role For CodeArtifact',
+        uses: 'aws-actions/configure-aws-credentials@v4',
+        with: {
+          'role-to-assume': this.codeArtifactConfig.roleToAssume,
+          'aws-region': this.codeArtifactConfig.region,
+          'role-session-name': 'CodeArtifactSession',
+        },
+      };
+      const runCommand = `aws codeartifact login --tool npm --domain ${this.codeArtifactConfig.domain} --domain-owner ${this.codeArtifactConfig.accountId} --repository ${this.codeArtifactConfig.repository} --region ${this.codeArtifactConfig.region}`;
+      const codeArtifactLogin = {
+        name: 'Login to AWS CodeArtifact',
+        id: 'login-codeartifact',
+        run: runCommand,
+      };
+      const buildFile = this.github?.tryFindWorkflow('build')?.file;
+      buildFile?.patch(JsonPatch.add('/jobs/build/steps/2', awsLogin));
+      buildFile?.patch(JsonPatch.add('/jobs/build/steps/3', codeArtifactLogin));
+    }
     this.buildWorkflow?.addPostBuildSteps(this.awsCredentials(releaseConfig));
     this.buildWorkflow?.addPostBuildSteps(this.deploymentStep(this.package.packageManager, releaseConfig));
   }
@@ -313,7 +379,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       with: {
         'role-to-assume': releaseOption.roleToAssume,
         'aws-region': releaseOption.region,
-        'role-duration-seconds': releaseOption.assumeRoleDurationInSeconds,
+        'role-duration-seconds': releaseOption.deploymentRoleSessionDuration,
         'role-session-name': `${releaseOption.accountType}Session`,
       },
     };

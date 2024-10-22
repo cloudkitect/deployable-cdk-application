@@ -1,7 +1,6 @@
-import { cdk, javascript, ReleasableCommits, TextFile } from 'projen';
+import { cdk, javascript, ReleasableCommits } from 'projen';
 import { NpmAccess } from 'projen/lib/javascript';
 
-const nodeVersion = '20';
 
 const project = new cdk.JsiiProject({
   author: 'CloudKitect Inc',
@@ -24,20 +23,19 @@ const project = new cdk.JsiiProject({
     'AWS CDK',
     'Release CDK App',
   ],
-  pnpmVersion: '9',
-  workflowNodeVersion: nodeVersion,
-  publishTasks: true,
+  pnpmVersion: '8',
   npmAccess: NpmAccess.PUBLIC,
   npmProvenance: false,
   releasableCommits: ReleasableCommits.featuresAndFixes(),
   deps: ['projen'],
   license: 'MIT',
+  buildWorkflowOptions: {
+    mutableBuild: true,
+  },
   peerDeps: ['projen', 'constructs'],
 });
 
-new TextFile(project, '.nvmrc', {
-  lines: [nodeVersion],
-});
+project.npmrc.addRegistry('https://registry.npmjs.org/');
 
 const exclusions = ['.DS_Store', '.idea', '*.iml'];
 project.gitignore.exclude(...exclusions);
