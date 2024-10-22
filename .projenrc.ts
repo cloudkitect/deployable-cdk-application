@@ -23,12 +23,15 @@ const project = new cdk.JsiiProject({
     'AWS CDK',
     'Release CDK App',
   ],
-  pnpmVersion: '9',
+  pnpmVersion: '8',
   npmAccess: NpmAccess.PUBLIC,
   npmProvenance: false,
   releasableCommits: ReleasableCommits.featuresAndFixes(),
   deps: ['projen'],
   license: 'MIT',
+  buildWorkflowOptions: {
+    mutableBuild: true,
+  },
   peerDeps: ['projen', 'constructs'],
 });
 

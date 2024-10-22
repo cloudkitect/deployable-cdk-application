@@ -31,7 +31,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: "9"
+          version: "8"
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
       - name: release
@@ -107,7 +107,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: "9"
+          version: "8"
       - name: Checkout
         uses: actions/checkout@v4
         with:
