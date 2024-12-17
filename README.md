@@ -17,7 +17,7 @@ from deployable cdk app using the following command.
 ```shell
 npx projen new --from "@cloudkitect/deployable-cdk-app"
 ```
-This will create a projen project that we can be setup to deploy into various aws accounts and environments
+This will create a projen project that we can be setup to deploy into various aws accounts and environments.
 
 Open project in your favorite IDE and update project configuration in .projenrc.ts file.
 
@@ -76,4 +76,4 @@ releaseConfigs: [{
 You can add as many environments as you want.
 
 Note: This setup requires that you have configured github as OIDC provider in your aws account 
-and have created a role with appropriate permissions.
+and have created a role with appropriate permissions. Checkout the following [link for CDK code](https://github.com/aws-samples/github-actions-oidc-cdk-construct)
