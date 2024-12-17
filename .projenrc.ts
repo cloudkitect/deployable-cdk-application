@@ -26,7 +26,7 @@ const project = new cdk.JsiiProject({
     'AI architect as a service',
     'Generative AI',
   ],
-  pnpmVersion: '8',
+  pnpmVersion: '9',
   npmAccess: NpmAccess.PUBLIC,
   npmProvenance: false,
   releasableCommits: ReleasableCommits.featuresAndFixes(),
