@@ -78,6 +78,7 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag">latestTag</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualApprovalStep">manualApprovalStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.packageManagerCommand">packageManagerCommand</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.taskNamePostfix">taskNamePostfix</a></code> | *No description.* |
 
 ---
 
@@ -836,6 +837,18 @@ public packageManagerCommand(packageManager: NodePackageManager): string
 ###### `packageManager`<sup>Required</sup> <a name="packageManager" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.packageManagerCommand.parameter.packageManager"></a>
 
 - *Type:* projen.javascript.NodePackageManager
+
+---
+
+##### `taskNamePostfix` <a name="taskNamePostfix" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.taskNamePostfix"></a>
+
+```typescript
+public taskNamePostfix(releaseConfig: ReleaseConfig): string
+```
+
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.taskNamePostfix.parameter.releaseConfig"></a>
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
 
 ---
 

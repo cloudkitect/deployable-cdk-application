@@ -224,7 +224,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createDeploymentTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const deployCommand = this.buildDeployCommand(releaseConfig, options.stackPattern);
-      const taskName = `deploy:${releaseConfig.accountType}:${releaseConfig.applicationName}`;
+      const taskName = `deploy:${this.taskNamePostfix(releaseConfig)}`;
       const task = this.addTask(taskName, {
         exec: deployCommand,
       });
@@ -235,7 +235,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createSynthTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const synthCommand = this.buildSynthCommand(releaseConfig, options.stackPattern);
-      const taskName = `synth:${releaseConfig.accountType}:${releaseConfig.applicationName}`;
+      const taskName = `synth:${this.taskNamePostfix(releaseConfig)}`;
       this.addTask(taskName, {
         exec: synthCommand,
       });
@@ -453,7 +453,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   deploymentStep(packageManager: NodePackageManager, releaseConfig: ReleaseConfig): JobStep {
     return {
       name: `Deployment to ${releaseConfig.accountType}`,
-      run: `${this.packageManagerCommand(packageManager)} deploy:${releaseConfig.accountType}`,
+      run: `${this.packageManagerCommand(packageManager)} deploy:${this.taskNamePostfix(releaseConfig)}`,
     };
   }
+
+  taskNamePostfix(releaseConfig: ReleaseConfig): string {
+    return `${releaseConfig.accountType}:${releaseConfig.applicationName}`;
+  }
+
 }

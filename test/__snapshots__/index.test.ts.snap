@@ -52,7 +52,7 @@ jobs:
           aws-region: us-east-1
           role-session-name: DevSession
       - name: Deployment to Dev
-        run: pnpm deploy:Dev
+        run: pnpm deploy:Dev:undefined
       - name: Find mutations
         id: self_mutation
         run: |-
@@ -163,7 +163,7 @@ jobs:
           aws-region: us-east-1
           role-session-name: ProdSession
       - name: Deployment to Prod
-        run: pnpm deploy:Prod
+        run: pnpm deploy:Prod:undefined
 "
 `;
 
@@ -223,7 +223,7 @@ jobs:
           aws-region: us-east-1
           role-session-name: UatSession
       - name: Deployment to Uat
-        run: pnpm deploy:Uat
+        run: pnpm deploy:Uat:undefined
 "
 `;
 
@@ -364,6 +364,6 @@ jobs:
           aws-region: us-east-1
           role-session-name: TestSession
       - name: Deployment to Test
-        run: pnpm deploy:Test
+        run: pnpm deploy:Test:undefined
 "
 `;
