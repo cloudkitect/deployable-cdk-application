@@ -6,7 +6,7 @@ const project = new cdk.JsiiProject({
   author: 'CloudKitect Inc',
   authorAddress: 'support@cloudkitect.com',
   defaultReleaseBranch: 'main',
-  jsiiVersion: '~5.4.0',
+  jsiiVersion: '~5.9.0',
   name: '@cloudkitect/deployable-cdk-app',
   packageManager: javascript.NodePackageManager.PNPM,
   projenrcTs: true,
