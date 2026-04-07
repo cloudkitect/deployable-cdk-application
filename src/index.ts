@@ -235,7 +235,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createSynthTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const synthCommand = this.buildSynthCommand(releaseConfig, options.stackPattern);
-      const taskName = `synth:${releaseConfig.accountType}`;
+      const taskName = `synth:${releaseConfig.accountType}:${releaseConfig.applicationName}`;
       this.addTask(taskName, {
         exec: synthCommand,
       });
