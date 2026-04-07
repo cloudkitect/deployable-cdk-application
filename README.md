@@ -30,7 +30,9 @@ releaseConfigs: [{
         deploymentMethod: 'change-set',
         roleToAssume: 'role-arn',
         region: 'us-east-1',
-        workflowName: 'build'
+        workflowType: 'build',
+        applicationName: "Web",
+        runsOn: "ubuntu-24.04-arm"
     }]
 ```
 accountType: Can be 
@@ -47,7 +49,7 @@ roleToAssume: ARN of the role to be assumed by the pipeline for deployment. This
 
 region: Any valid AWS region where application should be deployed e.g us-east-1.
 
-workflowName: Can be either
+workflowType: Can be either
 * build - if the deployment needs to happen during build time (On feature branch).
 * release - if the deployment needs to happen during release time (When merged to main branch).
 * manual - when manual option is used, it will create a new workflow that will accept the version number to be deployed.
@@ -61,14 +63,14 @@ releaseConfigs: [{
         deploymentMethod: 'change-set',
         roleToAssume: 'role-arn',
         region: 'us-east-1',
-        workflowName: 'build'
+        workflowType: 'build'
     },
     {
         accountType: 'Prod',
         deploymentMethod: 'prepare-change-set',
         roleToAssume: 'role-arn',
         region: 'us-east-1',
-        workflowName: 'manual'
+        workflowType: 'manual'
     }
 ]
 ```

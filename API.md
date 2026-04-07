@@ -4926,6 +4926,7 @@ const releaseConfig: ReleaseConfig = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.hotswap">hotswap</a></code> | <code>boolean</code> | Hotswap deployment. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.postDeploymentSteps">postDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Post deployment job steps. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.preDeploymentSteps">preDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Pre deployment job steps. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.runsOn">runsOn</a></code> | <code>string</code> | The platform applications runs on e.g. ubuntu-24.04-arm. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.workflowType">workflowType</a></code> | <code>string</code> | Workflow type where the deployment job should be added. |
 
 ---
@@ -5078,6 +5079,18 @@ public readonly preDeploymentSteps: JobStep[];
 - *Type:* projen.github.workflows.JobStep[]
 
 Pre deployment job steps.
+
+---
+
+##### `runsOn`<sup>Optional</sup> <a name="runsOn" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.runsOn"></a>
+
+```typescript
+public readonly runsOn: string;
+```
+
+- *Type:* string
+
+The platform applications runs on e.g. ubuntu-24.04-arm.
 
 ---
 

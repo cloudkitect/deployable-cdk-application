@@ -104,6 +104,12 @@ export interface ReleaseConfig {
      * If there are multiple applications in the deployment
      */
   readonly applicationName?: string;
+
+  /**
+     * The platform applications runs on
+     * e.g. ubuntu-24.04-arm
+     */
+  readonly runsOn?: string;
 }
 
 /**
@@ -293,6 +299,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
         run: runCommand,
       };
       const buildFile = this.github?.tryFindWorkflow('build')?.file;
+      buildFile?.patch(JsonPatch.add('/jobs/build/runs-on', 'ubuntu-24.04-arm'));
       buildFile?.patch(JsonPatch.add('/jobs/build/steps/2', awsLogin));
       buildFile?.patch(JsonPatch.add('/jobs/build/steps/3', codeArtifactLogin));
     }
@@ -302,7 +309,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
   addDeploymentJob(releaseConfig: ReleaseConfig, workflow?: GithubWorkflow) {
     const jobDefinition: Job = {
-      runsOn: ['ubuntu-latest'],
+      runsOn: ['ubuntu-24.04-arm'],
       permissions: {
         contents: JobPermission.WRITE,
         deployments: JobPermission.READ,
@@ -335,7 +342,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
   addDeploymentStageToReleaseWorkflow(releaseConfig: ReleaseConfig, dependency: string[]) {
     const jobDefinition: Job = {
-      runsOn: ['ubuntu-latest'],
+      runsOn: ['ubuntu-24.04-arm'],
       needs: dependency,
       permissions: {
         contents: JobPermission.WRITE,
