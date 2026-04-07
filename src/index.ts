@@ -224,7 +224,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createDeploymentTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const deployCommand = this.buildDeployCommand(releaseConfig, options.stackPattern);
-      const taskName = `deploy:${releaseConfig.accountType}`;
+      const taskName = `deploy:${releaseConfig.accountType}:${releaseConfig.applicationName}`;
       const task = this.addTask(taskName, {
         exec: deployCommand,
       });
