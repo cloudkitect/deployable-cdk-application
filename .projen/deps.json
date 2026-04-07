@@ -52,7 +52,7 @@
     },
     {
       "name": "jest-junit",
-      "version": "^15",
+      "version": "^16",
       "type": "build"
     },
     {
@@ -70,12 +70,12 @@
     },
     {
       "name": "jsii-rosetta",
-      "version": "~5.4.0",
+      "version": "~5.9.0",
       "type": "build"
     },
     {
       "name": "jsii",
-      "version": "~5.4.0",
+      "version": "~5.9.0",
       "type": "build"
     },
     {

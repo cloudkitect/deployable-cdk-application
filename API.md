@@ -31,6 +31,7 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addExcludeFromCleanup">addExcludeFromCleanup</a></code> | Exclude the matching files from pre-synth cleanup. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addGitIgnore">addGitIgnore</a></code> | Adds a .gitignore pattern. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addPackageIgnore">addPackageIgnore</a></code> | Adds patterns to be ignored by npm. |
@@ -87,6 +88,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `addExcludeFromCleanup` <a name="addExcludeFromCleanup" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.addExcludeFromCleanup"></a>
 
@@ -939,6 +961,7 @@ When given a project, this it the project itself.
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.packageManager">packageManager</a></code> | <code>projen.javascript.NodePackageManager</code> | The package manager to use. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.runScriptCommand">runScriptCommand</a></code> | <code>string</code> | The command to use to run scripts (e.g. `yarn run` or `npm run` depends on the package manager). |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.autoMerge">autoMerge</a></code> | <code>projen.github.AutoMerge</code> | Component that sets up mergify for merging approved pull requests. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.biome">biome</a></code> | <code>projen.javascript.Biome</code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.buildWorkflow">buildWorkflow</a></code> | <code>projen.build.BuildWorkflow</code> | The PR build GitHub workflow. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.buildWorkflowJobId">buildWorkflowJobId</a></code> | <code>string</code> | The job ID of the build workflow. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.jest">jest</a></code> | <code>projen.javascript.Jest</code> | The Jest configuration (if enabled). |
@@ -1481,6 +1504,16 @@ Component that sets up mergify for merging approved pull requests.
 
 ---
 
+##### `biome`<sup>Optional</sup> <a name="biome" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.biome"></a>
+
+```typescript
+public readonly biome: Biome;
+```
+
+- *Type:* projen.javascript.Biome
+
+---
+
 ##### `buildWorkflow`<sup>Optional</sup> <a name="buildWorkflow" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.property.buildWorkflow"></a>
 
 ```typescript
@@ -1992,6 +2025,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.logging">logging</a></code> | <code>projen.LoggerOptions</code> | Configure logging options such as verbosity. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.outdir">outdir</a></code> | <code>string</code> | The root directory of the project. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.parent">parent</a></code> | <code>projen.Project</code> | The parent project, if this project is part of a bigger project. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.projectTree">projectTree</a></code> | <code>boolean</code> | Generate a project tree file (`.projen/tree.json`) that shows all components and their relationships. Useful for understanding your project structure and debugging. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.projenCommand">projenCommand</a></code> | <code>string</code> | The shell command to use in order to run the projen CLI. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.projenrcJson">projenrcJson</a></code> | <code>boolean</code> | Generate (once) .projenrc.json (in JSON). Set to `false` in order to disable .projenrc.json generation. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.projenrcJsonOptions">projenrcJsonOptions</a></code> | <code>projen.ProjenrcJsonOptions</code> | Options for .projenrc.json. |
@@ -2014,6 +2048,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.stale">stale</a></code> | <code>boolean</code> | Auto-close of stale issues and pull request. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.staleOptions">staleOptions</a></code> | <code>projen.github.StaleOptions</code> | Auto-close stale issues and pull requests. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.vscode">vscode</a></code> | <code>boolean</code> | Enable VSCode integration. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.addPackageManagerToDevEngines">addPackageManagerToDevEngines</a></code> | <code>boolean</code> | Automatically add the resolved `packageManager` to `devEngines.packageManager` in `package.json`, setting `onFail` to `ignore`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.allowLibraryDependencies">allowLibraryDependencies</a></code> | <code>boolean</code> | Allow the project to include `peerDependencies` and `bundledDependencies`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.authorEmail">authorEmail</a></code> | <code>string</code> | Author's e-mail. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.authorName">authorName</a></code> | <code>string</code> | Author's name. |
@@ -2024,10 +2059,13 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bugsEmail">bugsEmail</a></code> | <code>string</code> | The email address to which issues should be reported. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bugsUrl">bugsUrl</a></code> | <code>string</code> | The url to your project's issue tracker. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bundledDeps">bundledDeps</a></code> | <code>string[]</code> | List of dependencies to bundle into this module. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bunVersion">bunVersion</a></code> | <code>string</code> | The version of Bun to use if using Bun as a package manager. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeArtifactOptions">codeArtifactOptions</a></code> | <code>projen.javascript.CodeArtifactOptions</code> | Options for npm packages using AWS CodeArtifact. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.deleteOrphanedLockFiles">deleteOrphanedLockFiles</a></code> | <code>boolean</code> | Automatically delete lockfiles from package managers that are not the active one. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.deps">deps</a></code> | <code>string[]</code> | Runtime dependencies of this module. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.description">description</a></code> | <code>string</code> | The description is just a string that helps people understand the purpose of the package. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.devDeps">devDeps</a></code> | <code>string[]</code> | Build dependencies for this module. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.devEngines">devEngines</a></code> | <code>projen.javascript.DevEngines</code> | Configure the `devEngines` field in `package.json`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.entrypoint">entrypoint</a></code> | <code>string</code> | Module entrypoint (`main` in `package.json`). |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.homepage">homepage</a></code> | <code>string</code> | Package's Homepage / Website. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.keywords">keywords</a></code> | <code>string[]</code> | Keywords to include in `package.json`. |
@@ -2040,6 +2078,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.npmRegistry">npmRegistry</a></code> | <code>string</code> | The host name of the npm registry to publish to. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.npmRegistryUrl">npmRegistryUrl</a></code> | <code>string</code> | The base URL of the npm package registry. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.npmTokenSecret">npmTokenSecret</a></code> | <code>string</code> | GitHub secret which contains the NPM token to use when publishing packages. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.npmTrustedPublishing">npmTrustedPublishing</a></code> | <code>boolean</code> | Use trusted publishing for publishing to npmjs.com Needs to be pre-configured on npm.js to work. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.packageManager">packageManager</a></code> | <code>projen.javascript.NodePackageManager</code> | The Node Package Manager used to execute scripts. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.packageName">packageName</a></code> | <code>string</code> | The "name" in package.json. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.peerDependencyOptions">peerDependencyOptions</a></code> | <code>projen.javascript.PeerDependencyOptions</code> | Options for `peerDeps`. |
@@ -2063,12 +2102,14 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.publishTasks">publishTasks</a></code> | <code>boolean</code> | Define publishing tasks that can be executed manually as well as workflows. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releasableCommits">releasableCommits</a></code> | <code>projen.ReleasableCommits</code> | Find commits that should be considered releasable Used to decide if a release is required. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseBranches">releaseBranches</a></code> | <code>{[ key: string ]: projen.release.BranchOptions}</code> | Defines additional release branches. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseEnvironment">releaseEnvironment</a></code> | <code>string</code> | The GitHub Actions environment used for the release. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseEveryCommit">releaseEveryCommit</a></code> | <code>boolean</code> | Automatically release new versions every commit to one of branches in `releaseBranches`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseFailureIssue">releaseFailureIssue</a></code> | <code>boolean</code> | Create a github issue on every failed publishing task. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseFailureIssueLabel">releaseFailureIssueLabel</a></code> | <code>string</code> | The label to apply to issues indicating publish failures. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseSchedule">releaseSchedule</a></code> | <code>string</code> | CRON schedule to trigger new releases. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseTagPrefix">releaseTagPrefix</a></code> | <code>string</code> | Automatically add the given prefix to release tags. Useful if you are releasing on multiple branches with overlapping version numbers. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseTrigger">releaseTrigger</a></code> | <code>projen.release.ReleaseTrigger</code> | The release trigger to use. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseWorkflowEnv">releaseWorkflowEnv</a></code> | <code>{[ key: string ]: string}</code> | Build environment variables for release workflows. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseWorkflowName">releaseWorkflowName</a></code> | <code>string</code> | The name of the default release workflow. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseWorkflowSetupSteps">releaseWorkflowSetupSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | A set of workflow steps to execute in order to setup the workflow container. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.versionrcOptions">versionrcOptions</a></code> | <code>{[ key: string ]: any}</code> | Custom configuration used when creating changelog with commit-and-tag-version package. |
@@ -2077,14 +2118,18 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.workflowRunsOnGroup">workflowRunsOnGroup</a></code> | <code>projen.GroupRunnerOptions</code> | Github Runner Group selection options. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.defaultReleaseBranch">defaultReleaseBranch</a></code> | <code>string</code> | The name of the main release branch. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.artifactsDirectory">artifactsDirectory</a></code> | <code>string</code> | A directory which will contain build artifacts. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.autoApproveUpgrades">autoApproveUpgrades</a></code> | <code>boolean</code> | Automatically approve deps upgrade PRs, allowing them to be merged by mergify (if configued). |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.auditDeps">auditDeps</a></code> | <code>boolean</code> | Run security audit on dependencies. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.auditDepsOptions">auditDepsOptions</a></code> | <code>projen.javascript.AuditOptions</code> | Security audit options. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.autoApproveUpgrades">autoApproveUpgrades</a></code> | <code>boolean</code> | Automatically approve deps upgrade PRs, allowing them to be merged by mergify (if configured). |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.biome">biome</a></code> | <code>boolean</code> | Setup Biome. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.biomeOptions">biomeOptions</a></code> | <code>projen.javascript.BiomeOptions</code> | Biome options. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.buildWorkflow">buildWorkflow</a></code> | <code>boolean</code> | Define a GitHub workflow for building PRs. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.buildWorkflowOptions">buildWorkflowOptions</a></code> | <code>projen.javascript.BuildWorkflowOptions</code> | Options for PR build workflow. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.buildWorkflowTriggers">buildWorkflowTriggers</a></code> | <code>projen.github.workflows.Triggers</code> | Build workflow triggers. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bundlerOptions">bundlerOptions</a></code> | <code>projen.javascript.BundlerOptions</code> | Options for `Bundler`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.checkLicenses">checkLicenses</a></code> | <code>projen.javascript.LicenseCheckerOptions</code> | Configure which licenses should be deemed acceptable for use by dependencies. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeCov">codeCov</a></code> | <code>boolean</code> | Define a GitHub workflow step for sending code coverage metrics to https://codecov.io/ Uses codecov/codecov-action@v4 A secret is required for private repos. Configured with `@codeCovTokenSecret`. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeCovTokenSecret">codeCovTokenSecret</a></code> | <code>string</code> | Define the secret name for a specified https://codecov.io/ token A secret is required to send coverage for private repositories. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeCov">codeCov</a></code> | <code>boolean</code> | Define a GitHub workflow step for sending code coverage metrics to https://codecov.io/ Uses codecov/codecov-action@v5 By default, OIDC auth is used. Alternatively a token can be provided via `codeCovTokenSecret`. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeCovTokenSecret">codeCovTokenSecret</a></code> | <code>string</code> | Define the secret name for a specified https://codecov.io/ token. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.copyrightOwner">copyrightOwner</a></code> | <code>string</code> | License copyright owner. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.copyrightPeriod">copyrightPeriod</a></code> | <code>string</code> | The copyright years to put in the LICENSE file. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.dependabot">dependabot</a></code> | <code>boolean</code> | Use dependabot to handle dependency upgrades. |
@@ -2135,18 +2180,20 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.buildCommand">buildCommand</a></code> | <code>string</code> | A command to execute before synthesis. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkout">cdkout</a></code> | <code>string</code> | cdk.out directory. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.context">context</a></code> | <code>{[ key: string ]: any}</code> | Additional context to include in `cdk.json`. |
-| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.featureFlags">featureFlags</a></code> | <code>boolean</code> | Include all feature flags in cdk.json. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.featureFlags">featureFlags</a></code> | <code>projen.awscdk.ICdkFeatureFlags</code> | Feature flags that should be enabled in `cdk.json`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.requireApproval">requireApproval</a></code> | <code>projen.awscdk.ApprovalLevel</code> | To protect you against unintended changes that affect your security posture, the AWS CDK Toolkit prompts you to approve security-related changes before deploying them. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.watchExcludes">watchExcludes</a></code> | <code>string[]</code> | Glob patterns to exclude from `cdk watch`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.watchIncludes">watchIncludes</a></code> | <code>string[]</code> | Glob patterns to include in `cdk watch`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkVersion">cdkVersion</a></code> | <code>string</code> | Minimum version of the AWS CDK to depend on. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkAssert">cdkAssert</a></code> | <code>boolean</code> | Warning: NodeJS only. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkAssertions">cdkAssertions</a></code> | <code>boolean</code> | Install the assertions library? |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkCliVersion">cdkCliVersion</a></code> | <code>string</code> | Version range of the AWS CDK CLI to depend on. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkDependencies">cdkDependencies</a></code> | <code>string[]</code> | Which AWS CDKv1 modules this project requires. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkDependenciesAsDeps">cdkDependenciesAsDeps</a></code> | <code>boolean</code> | If this is enabled (default), all modules declared in `cdkDependencies` will be also added as normal `dependencies` (as well as `peerDependencies`). |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkTestDependencies">cdkTestDependencies</a></code> | <code>string[]</code> | AWS CDK modules required for testing. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkVersionPinning">cdkVersionPinning</a></code> | <code>boolean</code> | Use pinned version instead of caret version for CDK. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.constructsVersion">constructsVersion</a></code> | <code>string</code> | Minimum version of the `constructs` library to depend on. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.app">app</a></code> | <code>string</code> | The command line to execute in order to synthesize the CDK application (language specific). |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.appEntrypoint">appEntrypoint</a></code> | <code>string</code> | The CDK app's entrypoint (relative to the source directory, which is "src" by default). |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.edgeLambdaAutoDiscover">edgeLambdaAutoDiscover</a></code> | <code>boolean</code> | Automatically adds an `cloudfront.experimental.EdgeFunction` for each `.edge-lambda.ts` handler in your source tree. If this is disabled, you can manually add an `awscdk.AutoDiscover` component to your project. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.experimentalIntegRunner">experimentalIntegRunner</a></code> | <code>boolean</code> | Enable experimental support for the AWS CDK integ-runner. |
@@ -2154,6 +2201,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.lambdaAutoDiscover">lambdaAutoDiscover</a></code> | <code>boolean</code> | Automatically adds an `awscdk.LambdaFunction` for each `.lambda.ts` handler in your source tree. If this is disabled, you can manually add an `awscdk.AutoDiscover` component to your project. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.lambdaExtensionAutoDiscover">lambdaExtensionAutoDiscover</a></code> | <code>boolean</code> | Automatically adds an `awscdk.LambdaExtension` for each `.lambda-extension.ts` entrypoint in your source tree. If this is disabled, you can manually add an `awscdk.AutoDiscover` component to your project. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.lambdaOptions">lambdaOptions</a></code> | <code>projen.awscdk.LambdaFunctionCommonOptions</code> | Common options for all AWS Lambda functions. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.singletonLambdaAutoDiscover">singletonLambdaAutoDiscover</a></code> | <code>boolean</code> | Automatically adds an `awscdk.SingletonFunction` for each `.singleton-lambda.ts` handler in your source tree. If this is disabled, you can manually add an `awscdk.AutoDiscover` component to your project. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeArtifactConfig">codeArtifactConfig</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig">CodeArtifactConfig</a></code> | If using code artifact for installing packages, provide necessary details. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseConfigs">releaseConfigs</a></code> | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>[]</code> | List of release configurations, this will specify environment specific release configurations. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.stackPattern">stackPattern</a></code> | <code>string</code> | Stack Pattern representing stacks to be deployed. |
@@ -2251,6 +2299,19 @@ public readonly parent: Project;
 - *Type:* projen.Project
 
 The parent project, if this project is part of a bigger project.
+
+---
+
+##### `projectTree`<sup>Optional</sup> <a name="projectTree" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.projectTree"></a>
+
+```typescript
+public readonly projectTree: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Generate a project tree file (`.projen/tree.json`) that shows all components and their relationships. Useful for understanding your project structure and debugging.
 
 ---
 
@@ -2574,6 +2635,19 @@ Enabled by default for root projects. Disabled for non-root projects.
 
 ---
 
+##### `addPackageManagerToDevEngines`<sup>Optional</sup> <a name="addPackageManagerToDevEngines" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.addPackageManagerToDevEngines"></a>
+
+```typescript
+public readonly addPackageManagerToDevEngines: boolean;
+```
+
+- *Type:* boolean
+- *Default:* true
+
+Automatically add the resolved `packageManager` to `devEngines.packageManager` in `package.json`, setting `onFail` to `ignore`.
+
+---
+
 ##### `allowLibraryDependencies`<sup>Optional</sup> <a name="allowLibraryDependencies" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.allowLibraryDependencies"></a>
 
 ```typescript
@@ -2714,6 +2788,19 @@ this will be what you `package.json` will eventually include.
 
 ---
 
+##### `bunVersion`<sup>Optional</sup> <a name="bunVersion" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bunVersion"></a>
+
+```typescript
+public readonly bunVersion: string;
+```
+
+- *Type:* string
+- *Default:* "latest"
+
+The version of Bun to use if using Bun as a package manager.
+
+---
+
 ##### `codeArtifactOptions`<sup>Optional</sup> <a name="codeArtifactOptions" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeArtifactOptions"></a>
 
 ```typescript
@@ -2726,6 +2813,24 @@ public readonly codeArtifactOptions: CodeArtifactOptions;
 Options for npm packages using AWS CodeArtifact.
 
 This is required if publishing packages to, or installing scoped packages from AWS CodeArtifact
+
+---
+
+##### `deleteOrphanedLockFiles`<sup>Optional</sup> <a name="deleteOrphanedLockFiles" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.deleteOrphanedLockFiles"></a>
+
+```typescript
+public readonly deleteOrphanedLockFiles: boolean;
+```
+
+- *Type:* boolean
+- *Default:* true
+
+Automatically delete lockfiles from package managers that are not the active one.
+
+Only triggered when the lockfile for the configured package
+manager already exists.
+
+This is useful when migrating between package managers to avoid conflicts.
 
 ---
 
@@ -2801,6 +2906,24 @@ this will be what you `package.json` will eventually include.
 [ 'typescript', '@types/express' ]
 ```
 
+
+##### `devEngines`<sup>Optional</sup> <a name="devEngines" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.devEngines"></a>
+
+```typescript
+public readonly devEngines: DevEngines;
+```
+
+- *Type:* projen.javascript.DevEngines
+
+Configure the `devEngines` field in `package.json`.
+
+The `devEngines.packageManager` field is automatically populated based on
+the resolved `packageManager` value. Any fields provided here are merged
+with the auto-populated `packageManager` entry.
+
+> [https://docs.npmjs.com/cli/v10/configuring-npm/package-json#devengines](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#devengines)
+
+---
 
 ##### `entrypoint`<sup>Optional</sup> <a name="entrypoint" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.entrypoint"></a>
 
@@ -2990,6 +3113,19 @@ GitHub secret which contains the NPM token to use when publishing packages.
 
 ---
 
+##### `npmTrustedPublishing`<sup>Optional</sup> <a name="npmTrustedPublishing" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.npmTrustedPublishing"></a>
+
+```typescript
+public readonly npmTrustedPublishing: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Use trusted publishing for publishing to npmjs.com Needs to be pre-configured on npm.js to work.
+
+---
+
 ##### `packageManager`<sup>Optional</sup> <a name="packageManager" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.packageManager"></a>
 
 ```typescript
@@ -2997,7 +3133,7 @@ public readonly packageManager: NodePackageManager;
 ```
 
 - *Type:* projen.javascript.NodePackageManager
-- *Default:* NodePackageManager.YARN_CLASSIC
+- *Default:* Detected from the calling process or `YARN_CLASSIC` if detection fails.
 
 The Node Package Manager used to execute scripts.
 
@@ -3231,6 +3367,7 @@ environment:
 - Working directory: the project directory.
 - `$VERSION`: the current version. Looks like `1.2.3`.
 - `$LATEST_TAG`: the most recent tag. Looks like `prefix-v1.2.3`, or may be unset.
+- `$SUGGESTED_BUMP`: the suggested bump action based on commits. One of `major|minor|patch|none`.
 
 The command should print one of the following to `stdout`:
 
@@ -3348,6 +3485,25 @@ be provided for the default branch.
 
 ---
 
+##### `releaseEnvironment`<sup>Optional</sup> <a name="releaseEnvironment" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseEnvironment"></a>
+
+```typescript
+public readonly releaseEnvironment: string;
+```
+
+- *Type:* string
+- *Default:* no environment used, unless set at the artifact level
+
+The GitHub Actions environment used for the release.
+
+This can be used to add an explicit approval step to the release
+or limit who can initiate a release through environment protection rules.
+
+When multiple artifacts are released, the environment can be overwritten
+on a per artifact basis.
+
+---
+
 ##### ~~`releaseEveryCommit`~~<sup>Optional</sup> <a name="releaseEveryCommit" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseEveryCommit"></a>
 
 - *Deprecated:* Use `releaseTrigger: ReleaseTrigger.continuous()` instead
@@ -3434,6 +3590,19 @@ public readonly releaseTrigger: ReleaseTrigger;
 - *Default:* Continuous releases (`ReleaseTrigger.continuous()`)
 
 The release trigger to use.
+
+---
+
+##### `releaseWorkflowEnv`<sup>Optional</sup> <a name="releaseWorkflowEnv" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.releaseWorkflowEnv"></a>
+
+```typescript
+public readonly releaseWorkflowEnv: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+- *Default:* {}
+
+Build environment variables for release workflows.
 
 ---
 
@@ -3541,6 +3710,36 @@ A directory which will contain build artifacts.
 
 ---
 
+##### `auditDeps`<sup>Optional</sup> <a name="auditDeps" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.auditDeps"></a>
+
+```typescript
+public readonly auditDeps: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Run security audit on dependencies.
+
+When enabled, creates an "audit" task that checks for known security vulnerabilities
+in dependencies. By default, runs during every build and checks for "high" severity
+vulnerabilities or above in all dependencies (including dev dependencies).
+
+---
+
+##### `auditDepsOptions`<sup>Optional</sup> <a name="auditDepsOptions" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.auditDepsOptions"></a>
+
+```typescript
+public readonly auditDepsOptions: AuditOptions;
+```
+
+- *Type:* projen.javascript.AuditOptions
+- *Default:* default options
+
+Security audit options.
+
+---
+
 ##### `autoApproveUpgrades`<sup>Optional</sup> <a name="autoApproveUpgrades" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.autoApproveUpgrades"></a>
 
 ```typescript
@@ -3550,9 +3749,35 @@ public readonly autoApproveUpgrades: boolean;
 - *Type:* boolean
 - *Default:* true
 
-Automatically approve deps upgrade PRs, allowing them to be merged by mergify (if configued).
+Automatically approve deps upgrade PRs, allowing them to be merged by mergify (if configured).
 
 Throw if set to true but `autoApproveOptions` are not defined.
+
+---
+
+##### `biome`<sup>Optional</sup> <a name="biome" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.biome"></a>
+
+```typescript
+public readonly biome: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Setup Biome.
+
+---
+
+##### `biomeOptions`<sup>Optional</sup> <a name="biomeOptions" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.biomeOptions"></a>
+
+```typescript
+public readonly biomeOptions: BiomeOptions;
+```
+
+- *Type:* projen.javascript.BiomeOptions
+- *Default:* default options
+
+Biome options.
 
 ---
 
@@ -3632,7 +3857,7 @@ public readonly codeCov: boolean;
 - *Type:* boolean
 - *Default:* false
 
-Define a GitHub workflow step for sending code coverage metrics to https://codecov.io/ Uses codecov/codecov-action@v4 A secret is required for private repos. Configured with `@codeCovTokenSecret`.
+Define a GitHub workflow step for sending code coverage metrics to https://codecov.io/ Uses codecov/codecov-action@v5 By default, OIDC auth is used. Alternatively a token can be provided via `codeCovTokenSecret`.
 
 ---
 
@@ -3643,9 +3868,9 @@ public readonly codeCovTokenSecret: string;
 ```
 
 - *Type:* string
-- *Default:* if this option is not specified, only public repositories are supported
+- *Default:* OIDC auth is used
 
-Define the secret name for a specified https://codecov.io/ token A secret is required to send coverage for private repositories.
+Define the secret name for a specified https://codecov.io/ token.
 
 ---
 
@@ -3710,7 +3935,7 @@ public readonly depsUpgrade: boolean;
 ```
 
 - *Type:* boolean
-- *Default:* true
+- *Default:* `true` for root projects, `false` for subprojects
 
 Use tasks and github workflows to handle dependency upgrades.
 
@@ -4007,7 +4232,7 @@ public readonly workflowGitIdentity: GitIdentity;
 ```
 
 - *Type:* projen.github.GitIdentity
-- *Default:* GitHub Actions
+- *Default:* default GitHub Actions user
 
 The git identity to use in workflows.
 
@@ -4113,7 +4338,7 @@ public readonly eslint: boolean;
 ```
 
 - *Type:* boolean
-- *Default:* true
+- *Default:* true, unless biome is enabled
 
 Setup eslint.
 
@@ -4327,13 +4552,17 @@ Additional context to include in `cdk.json`.
 ##### `featureFlags`<sup>Optional</sup> <a name="featureFlags" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.featureFlags"></a>
 
 ```typescript
-public readonly featureFlags: boolean;
+public readonly featureFlags: ICdkFeatureFlags;
 ```
 
-- *Type:* boolean
-- *Default:* true
+- *Type:* projen.awscdk.ICdkFeatureFlags
+- *Default:* no feature flags are enabled by default
 
-Include all feature flags in cdk.json.
+Feature flags that should be enabled in `cdk.json`.
+
+Make sure to double-check any changes to feature flags in `cdk.json` before deploying.
+Unexpected changes may cause breaking changes in your CDK app.
+You can overwrite any feature flag by passing it into the context field.
 
 ---
 
@@ -4383,7 +4612,7 @@ public readonly cdkVersion: string;
 ```
 
 - *Type:* string
-- *Default:* "2.1.0"
+- *Default:* "2.189.1"
 
 Minimum version of the AWS CDK to depend on.
 
@@ -4419,6 +4648,24 @@ Install the assertions library?
 
 Only needed for CDK 1.x. If using CDK 2.x then
 assertions is already included in 'aws-cdk-lib'
+
+---
+
+##### `cdkCliVersion`<sup>Optional</sup> <a name="cdkCliVersion" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkCliVersion"></a>
+
+```typescript
+public readonly cdkCliVersion: string;
+```
+
+- *Type:* string
+- *Default:* "^2"
+
+Version range of the AWS CDK CLI to depend on.
+
+Can be either a specific version, or an NPM version range.
+
+By default, the latest 2.x version will be installed; you can use this
+option to restrict it to a specific version or version range.
 
 ---
 
@@ -4494,9 +4741,21 @@ public readonly constructsVersion: string;
 ```
 
 - *Type:* string
-- *Default:* for CDK 1.x the default is "3.2.27", for CDK 2.x the default is "10.0.5".
+- *Default:* for CDK 1.x the default is "3.2.27", for CDK 2.x the default is "10.5.1".
 
 Minimum version of the `constructs` library to depend on.
+
+---
+
+##### `app`<sup>Optional</sup> <a name="app" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.app"></a>
+
+```typescript
+public readonly app: string;
+```
+
+- *Type:* string
+
+The command line to execute in order to synthesize the CDK application (language specific).
 
 ---
 
@@ -4591,6 +4850,19 @@ Common options for all AWS Lambda functions.
 
 ---
 
+##### `singletonLambdaAutoDiscover`<sup>Optional</sup> <a name="singletonLambdaAutoDiscover" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.singletonLambdaAutoDiscover"></a>
+
+```typescript
+public readonly singletonLambdaAutoDiscover: boolean;
+```
+
+- *Type:* boolean
+- *Default:* true
+
+Automatically adds an `awscdk.SingletonFunction` for each `.singleton-lambda.ts` handler in your source tree. If this is disabled, you can manually add an `awscdk.AutoDiscover` component to your project.
+
+---
+
 ##### `codeArtifactConfig`<sup>Optional</sup> <a name="codeArtifactConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeArtifactConfig"></a>
 
 ```typescript
@@ -4647,6 +4919,7 @@ const releaseConfig: ReleaseConfig = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.accountType">accountType</a></code> | <code>string</code> | Environment name to deploy to. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.region">region</a></code> | <code>string</code> | Default AWS region for the account used for deployment. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.roleToAssume">roleToAssume</a></code> | <code>string</code> | ARN of AWS role to be assumed by deployment task. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.applicationName">applicationName</a></code> | <code>string</code> | If there are multiple applications in the deployment. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.approvers">approvers</a></code> | <code>string</code> | Comma separated list of github usernames who need to approve the deployments. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentMethod">deploymentMethod</a></code> | <code>string</code> | Deploy method. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentRoleSessionDuration">deploymentRoleSessionDuration</a></code> | <code>number</code> | Duration of assume role session. |
@@ -4713,6 +4986,18 @@ ARN of AWS role to be assumed by deployment task.
 arn:aws:iam::ACCOUNTID:role/ROLENAME
 ```
 
+
+##### `applicationName`<sup>Optional</sup> <a name="applicationName" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.applicationName"></a>
+
+```typescript
+public readonly applicationName: string;
+```
+
+- *Type:* string
+
+If there are multiple applications in the deployment.
+
+---
 
 ##### `approvers`<sup>Optional</sup> <a name="approvers" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.approvers"></a>
 

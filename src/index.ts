@@ -99,6 +99,11 @@ export interface ReleaseConfig {
      * @default release
      */
   readonly workflowType?: string;
+
+  /**
+     * If there are multiple applications in the deployment
+     */
+  readonly applicationName?: string;
 }
 
 /**
@@ -235,6 +240,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     let command = 'cdk synth';
     command += stackPattern ? ' ' + stackPattern : ' --all';
     command += ` --context env=${releaseConfig.accountType}`;
+    command += ` --context app=${releaseConfig.applicationName}`;
     return command;
   }
 
@@ -244,6 +250,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     command += stackPattern ? ' ' + stackPattern : ' --all';
     command += releaseConfig.hotswap ? ' --hotswap' : '';
     command += ` --context env=${releaseConfig.accountType}`;
+    command += ` --context app=${releaseConfig.applicationName}`;
     command += ` --method ${deployMethod}`;
     command += ' --require-approval never';
     return command;
