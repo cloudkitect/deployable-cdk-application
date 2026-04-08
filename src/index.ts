@@ -398,7 +398,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
         'role-to-assume': releaseOption.roleToAssume,
         'aws-region': releaseOption.region,
         'role-duration-seconds': releaseOption.deploymentRoleSessionDuration,
-        'role-session-name': `Session:${this.taskNamePostfix(releaseOption)}`,
+        'role-session-name': `Session${this.taskNamePostfix(releaseOption).replace(':', '')}`,
       },
     };
   }
