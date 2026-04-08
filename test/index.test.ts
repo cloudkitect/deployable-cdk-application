@@ -83,15 +83,24 @@ describe('Multi app deployment', () => {
     workflowNodeVersion: '14.18.1',
     projenrcTs: true,
     outdir: mkdtemp(),
-    releaseConfigs: [{
-      accountType: 'Dev',
-      applicationName: 'Api',
-      deploymentMethod: 'change-set',
-      roleToAssume: 'role',
-      region: 'us-east-1',
-      workflowType: 'build',
-    },
-      ],
+    releaseConfigs: [
+      {
+        accountType: 'Dev',
+        applicationName: 'Api',
+        deploymentMethod: 'change-set',
+        roleToAssume: 'role123',
+        region: 'us-east-1',
+        workflowType: 'build',
+      },
+      {
+        accountType: 'Dev',
+        applicationName: 'Web',
+        deploymentMethod: 'change-set',
+        roleToAssume: 'role456',
+        region: 'us-east-1',
+        workflowType: 'build',
+      },
+    ],
     codeArtifactConfig: {
       roleToAssume: 'role',
       region: 'us-east-1',

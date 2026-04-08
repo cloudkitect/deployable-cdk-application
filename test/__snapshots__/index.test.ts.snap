@@ -45,14 +45,22 @@ jobs:
         run: pnpm i --no-frozen-lockfile
       - name: build
         run: npx projen build
-      - name: Assume AWS Role
+      - name: Assume AWS Role in Dev:Api
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: role
+          role-to-assume: role123
           aws-region: us-east-1
-          role-session-name: DevSession
-      - name: Deployment to Dev
-        run: pnpm deploy:Dev:Api
+          role-session-name: Session:Dev:Api
+      - name: Deployment to Dev:Api
+        run: pnpm Deploy:Dev:Api
+      - name: Assume AWS Role in Dev:Web
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: role456
+          aws-region: us-east-1
+          role-session-name: Session:Dev:Web
+      - name: Deployment to Dev:Web
+        run: pnpm Deploy:Dev:Web
       - name: Find mutations
         id: self_mutation
         run: |-
@@ -152,14 +160,14 @@ jobs:
         run: pnpm i --no-frozen-lockfile
       - name: build
         run: npx projen build
-      - name: Assume AWS Role
+      - name: Assume AWS Role in Dev
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: role
           aws-region: us-east-1
-          role-session-name: DevSession
+          role-session-name: Session:Dev
       - name: Deployment to Dev
-        run: pnpm deploy:Dev:undefined
+        run: pnpm Deploy:Dev
       - name: Find mutations
         id: self_mutation
         run: |-
@@ -263,14 +271,14 @@ jobs:
           package-manager-cache: false
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
-      - name: Assume AWS Role
+      - name: Assume AWS Role in Prod
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: role2
           aws-region: us-east-1
-          role-session-name: ProdSession
+          role-session-name: Session:Prod
       - name: Deployment to Prod
-        run: pnpm deploy:Prod:undefined
+        run: pnpm Deploy:Prod
 "
 `;
 
@@ -323,14 +331,14 @@ jobs:
           package-manager-cache: false
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
-      - name: Assume AWS Role
+      - name: Assume AWS Role in Uat
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: role2
           aws-region: us-east-1
-          role-session-name: UatSession
+          role-session-name: Session:Uat
       - name: Deployment to Uat
-        run: pnpm deploy:Uat:undefined
+        run: pnpm Deploy:Uat
 "
 `;
 
@@ -425,7 +433,7 @@ jobs:
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         run: errout=$(mktemp); gh release create $(cat dist/releasetag.txt) -R $GITHUB_REPOSITORY -F dist/changelog.md -t $(cat dist/releasetag.txt) --target $GITHUB_SHA 2> $errout && true; exitcode=$?; if [ $exitcode -ne 0 ] && ! grep -q "Release.tag_name already exists" $errout; then cat $errout; exit $exitcode; fi
-  deploy_to_Test:
+  Deploy:Test:
     needs: release_github
     runs-on: ubuntu-24.04-arm
     permissions:
@@ -464,13 +472,13 @@ jobs:
           package-manager-cache: false
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
-      - name: Assume AWS Role
+      - name: Assume AWS Role in Test
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: role
           aws-region: us-east-1
-          role-session-name: TestSession
+          role-session-name: Session:Test
       - name: Deployment to Test
-        run: pnpm deploy:Test:undefined
+        run: pnpm Deploy:Test
 "
 `;
