@@ -50,7 +50,7 @@ jobs:
         with:
           role-to-assume: role123
           aws-region: us-east-1
-          role-session-name: Session:Dev:Api
+          role-session-name: SessionDevApi
       - name: Deployment to Dev:Api
         run: pnpm Deploy:Dev:Api
       - name: Assume AWS Role in Dev:Web
@@ -58,7 +58,7 @@ jobs:
         with:
           role-to-assume: role456
           aws-region: us-east-1
-          role-session-name: Session:Dev:Web
+          role-session-name: SessionDevWeb
       - name: Deployment to Dev:Web
         run: pnpm Deploy:Dev:Web
       - name: Find mutations
@@ -165,7 +165,7 @@ jobs:
         with:
           role-to-assume: role
           aws-region: us-east-1
-          role-session-name: Session:Dev
+          role-session-name: SessionDev
       - name: Deployment to Dev
         run: pnpm Deploy:Dev
       - name: Find mutations
@@ -276,7 +276,7 @@ jobs:
         with:
           role-to-assume: role2
           aws-region: us-east-1
-          role-session-name: Session:Prod
+          role-session-name: SessionProd
       - name: Deployment to Prod
         run: pnpm Deploy:Prod
 "
@@ -336,7 +336,7 @@ jobs:
         with:
           role-to-assume: role2
           aws-region: us-east-1
-          role-session-name: Session:Uat
+          role-session-name: SessionUat
       - name: Deployment to Uat
         run: pnpm Deploy:Uat
 "
@@ -477,7 +477,7 @@ jobs:
         with:
           role-to-assume: role
           aws-region: us-east-1
-          role-session-name: Session:Test
+          role-session-name: SessionTest
       - name: Deployment to Test
         run: pnpm Deploy:Test
 "
