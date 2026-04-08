@@ -200,6 +200,11 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     this.createDeploymentTasks(options);
   }
 
+  get postCompileTask(): Task {
+
+    return super.postCompileTask;
+  }
+
   synth() {
     this.buildDeploymentStages();
     super.synth();
@@ -207,6 +212,27 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
   buildDeploymentStages() {
     let releaseDependency = ['release_github'];
+    if (this.codeArtifactConfig.roleToAssume) {
+      const awsLogin = {
+        name: 'Assume AWS Role For CodeArtifact',
+        uses: 'aws-actions/configure-aws-credentials@v4',
+        with: {
+          'role-to-assume': this.codeArtifactConfig.roleToAssume,
+          'aws-region': this.codeArtifactConfig.region,
+          'role-session-name': 'CodeArtifactSession',
+        },
+      };
+      const runCommand = `aws codeartifact login --tool npm --domain ${this.codeArtifactConfig.domain} --domain-owner ${this.codeArtifactConfig.accountId} --repository ${this.codeArtifactConfig.repository} --region ${this.codeArtifactConfig.region}`;
+      const codeArtifactLogin = {
+        name: 'Login to AWS CodeArtifact',
+        id: 'login-codeartifact',
+        run: runCommand,
+      };
+      const buildFile = this.github?.tryFindWorkflow('build')?.file;
+      buildFile?.patch(JsonPatch.add('/jobs/build/runs-on', 'ubuntu-24.04-arm'));
+      buildFile?.patch(JsonPatch.add('/jobs/build/steps/2', awsLogin));
+      buildFile?.patch(JsonPatch.add('/jobs/build/steps/3', codeArtifactLogin));
+    }
     this.releaseConfigs.forEach((releaseConfig) => {
       if (releaseConfig.workflowType == 'build') {
         this.addDeploymentStageToBuildWorkflow(releaseConfig);
@@ -224,7 +250,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createDeploymentTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const deployCommand = this.buildDeployCommand(releaseConfig, options.stackPattern);
-      const taskName = `deploy:${this.taskNamePostfix(releaseConfig)}`;
+      const taskName = `Deploy:${this.taskNamePostfix(releaseConfig)}`;
       const task = this.addTask(taskName, {
         exec: deployCommand,
       });
@@ -235,7 +261,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createSynthTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const synthCommand = this.buildSynthCommand(releaseConfig, options.stackPattern);
-      const taskName = `synth:${this.taskNamePostfix(releaseConfig)}`;
+      const taskName = `Synth:${this.taskNamePostfix(releaseConfig)}`;
       this.addTask(taskName, {
         exec: synthCommand,
       });
@@ -281,28 +307,6 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   addDeploymentStageToBuildWorkflow(releaseConfig: ReleaseConfig) {
-
-    if (this.codeArtifactConfig.roleToAssume) {
-      const awsLogin = {
-        name: 'Assume AWS Role For CodeArtifact',
-        uses: 'aws-actions/configure-aws-credentials@v4',
-        with: {
-          'role-to-assume': this.codeArtifactConfig.roleToAssume,
-          'aws-region': this.codeArtifactConfig.region,
-          'role-session-name': 'CodeArtifactSession',
-        },
-      };
-      const runCommand = `aws codeartifact login --tool npm --domain ${this.codeArtifactConfig.domain} --domain-owner ${this.codeArtifactConfig.accountId} --repository ${this.codeArtifactConfig.repository} --region ${this.codeArtifactConfig.region}`;
-      const codeArtifactLogin = {
-        name: 'Login to AWS CodeArtifact',
-        id: 'login-codeartifact',
-        run: runCommand,
-      };
-      const buildFile = this.github?.tryFindWorkflow('build')?.file;
-      buildFile?.patch(JsonPatch.add('/jobs/build/runs-on', 'ubuntu-24.04-arm'));
-      buildFile?.patch(JsonPatch.add('/jobs/build/steps/2', awsLogin));
-      buildFile?.patch(JsonPatch.add('/jobs/build/steps/3', codeArtifactLogin));
-    }
     this.buildWorkflow?.addPostBuildSteps(this.awsCredentials(releaseConfig));
     this.buildWorkflow?.addPostBuildSteps(this.deploymentStep(this.package.packageManager, releaseConfig));
   }
@@ -367,7 +371,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     for (const steps of postDeploymentSteps) {
       jobDefinition.steps.push(steps);
     }
-    let jobName = `deploy_to_${releaseConfig.accountType}`;
+    let jobName = `Deploy:${this.taskNamePostfix(releaseConfig)}`;
     const job: Record<string, Job> = {};
     job[jobName] = jobDefinition;
     this.release?.addJobs(job);
@@ -388,13 +392,13 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
   awsCredentials(releaseOption: ReleaseConfig): JobStep {
     return {
-      name: 'Assume AWS Role',
+      name: `Assume AWS Role in ${this.taskNamePostfix(releaseOption)}`,
       uses: 'aws-actions/configure-aws-credentials@v4',
       with: {
         'role-to-assume': releaseOption.roleToAssume,
         'aws-region': releaseOption.region,
         'role-duration-seconds': releaseOption.deploymentRoleSessionDuration,
-        'role-session-name': `${releaseOption.accountType}Session`,
+        'role-session-name': `Session:${this.taskNamePostfix(releaseOption)}`,
       },
     };
   }
@@ -422,14 +426,14 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
   manualApprovalStep(releaseConfig: ReleaseConfig): JobStep {
     return {
-      name: 'Wait for approval',
+      name: `Wait for approval for ${this.taskNamePostfix(releaseConfig)}`,
       uses: 'trstringer/manual-approval@v1',
       with: {
         'secret': '${{ steps.generate_token.outputs.token }}',
         'approvers': releaseConfig.approvers,
         'minimum-approvals': 1,
-        'issue-title': 'Deployment approval for ${{ env.CURRENT_TAG }} to ' + releaseConfig.accountType,
-        'issue-body': 'Please approve or deny the deployment of version ${{ env.CURRENT_TAG }} to' + +releaseConfig.accountType,
+        'issue-title': 'Deployment approval for ${{ env.CURRENT_TAG }} to ' + this.taskNamePostfix(releaseConfig),
+        'issue-body': 'Please approve or deny the deployment of version ${{ env.CURRENT_TAG }} to' + this.taskNamePostfix(releaseConfig),
       },
     };
   }
@@ -452,13 +456,17 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
 
   deploymentStep(packageManager: NodePackageManager, releaseConfig: ReleaseConfig): JobStep {
     return {
-      name: `Deployment to ${releaseConfig.accountType}`,
-      run: `${this.packageManagerCommand(packageManager)} deploy:${this.taskNamePostfix(releaseConfig)}`,
+      name: `Deployment to ${this.taskNamePostfix(releaseConfig)}`,
+      run: `${this.packageManagerCommand(packageManager)} Deploy:${this.taskNamePostfix(releaseConfig)}`,
     };
   }
 
   taskNamePostfix(releaseConfig: ReleaseConfig): string {
-    return `${releaseConfig.accountType}:${releaseConfig.applicationName}`;
+    if (releaseConfig.applicationName) {
+      return `${releaseConfig.accountType}:${releaseConfig.applicationName}`;
+    } else {
+      return releaseConfig.accountType;
+    }
   }
 
 }
