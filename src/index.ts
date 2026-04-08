@@ -200,7 +200,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     this.createDeploymentTasks(options);
   }
 
-  synth() {
+    get postCompileTask(): Task {
+
+        return super.postCompileTask;
+    }
+
+    synth() {
     this.buildDeploymentStages();
     super.synth();
   }

@@ -74,3 +74,35 @@ describe('No stack pattern', () => {
     expect(synthOutput[buildWorkflowFilePath]).toMatchSnapshot();
   });
 });
+
+describe('Multi app deployment', () => {
+  const project = new DeployableCdkApplication({
+    name: 'my-test--multi-app',
+    defaultReleaseBranch: 'main',
+    cdkVersion: '1.49.0',
+    workflowNodeVersion: '14.18.1',
+    projenrcTs: true,
+    outdir: mkdtemp(),
+    releaseConfigs: [{
+      accountType: 'Dev',
+      applicationName: 'Api',
+      deploymentMethod: 'change-set',
+      roleToAssume: 'role',
+      region: 'us-east-1',
+      workflowType: 'build',
+    },
+      ],
+    codeArtifactConfig: {
+      roleToAssume: 'role',
+      region: 'us-east-1',
+      accountId: '123',
+      repository: 'repo',
+      domain: 'domain',
+    },
+  });
+  const synthOutput = synthSnapshot(project);
+  test('build workflow', () => {
+    expect(synthOutput[buildWorkflowFilePath]).toMatchSnapshot();
+  });
+});
+
