@@ -70,6 +70,7 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildDeploymentStages">buildDeploymentStages</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.buildSynthCommand">buildSynthCommand</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.checkoutStep">checkoutStep</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.codeArtifactLoginSteps">codeArtifactLoginSteps</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createDeploymentTasks">createDeploymentTasks</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createManuallyApprovedWorkflowForDeploymentStage">createManuallyApprovedWorkflowForDeploymentStage</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createSynthTasks">createSynthTasks</a></code> | *No description.* |
@@ -78,6 +79,7 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag">latestTag</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualApprovalStep">manualApprovalStep</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.packageManagerCommand">packageManagerCommand</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.setupStepsWithCodeArtifact">setupStepsWithCodeArtifact</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.taskNamePostfix">taskNamePostfix</a></code> | *No description.* |
 
 ---
@@ -750,6 +752,12 @@ public checkoutStep(passedRef: string): JobStep
 
 ---
 
+##### `codeArtifactLoginSteps` <a name="codeArtifactLoginSteps" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.codeArtifactLoginSteps"></a>
+
+```typescript
+public codeArtifactLoginSteps(): JobStep[]
+```
+
 ##### `createDeploymentTasks` <a name="createDeploymentTasks" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.createDeploymentTasks"></a>
 
 ```typescript
@@ -839,6 +847,12 @@ public packageManagerCommand(packageManager: NodePackageManager): string
 - *Type:* projen.javascript.NodePackageManager
 
 ---
+
+##### `setupStepsWithCodeArtifact` <a name="setupStepsWithCodeArtifact" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.setupStepsWithCodeArtifact"></a>
+
+```typescript
+public setupStepsWithCodeArtifact(): JobStep[]
+```
 
 ##### `taskNamePostfix` <a name="taskNamePostfix" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.taskNamePostfix"></a>
 

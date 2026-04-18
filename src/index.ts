@@ -227,21 +227,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     let releaseAnchor: string[] = ['release_github'];
     let parallelBatch: string[] = [];
     if (this.codeArtifactConfig.roleToAssume) {
-      const awsLogin = {
-        name: 'Assume AWS Role For CodeArtifact',
-        uses: 'aws-actions/configure-aws-credentials@v4',
-        with: {
-          'role-to-assume': this.codeArtifactConfig.roleToAssume,
-          'aws-region': this.codeArtifactConfig.region,
-          'role-session-name': 'CodeArtifactSession',
-        },
-      };
-      const runCommand = `aws codeartifact login --tool npm --domain ${this.codeArtifactConfig.domain} --domain-owner ${this.codeArtifactConfig.accountId} --repository ${this.codeArtifactConfig.repository} --region ${this.codeArtifactConfig.region}`;
-      const codeArtifactLogin = {
-        name: 'Login to AWS CodeArtifact',
-        id: 'login-codeartifact',
-        run: runCommand,
-      };
+      const [awsLogin, codeArtifactLogin] = this.codeArtifactLoginSteps();
       const buildFile = this.github?.tryFindWorkflow('build')?.file;
       buildFile?.patch(JsonPatch.add('/jobs/build/runs-on', 'ubuntu-24.04-arm'));
       buildFile?.patch(JsonPatch.add('/jobs/build/steps/2', awsLogin));
@@ -327,6 +313,40 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     return deploymentWorkflow;
   }
 
+  codeArtifactLoginSteps(): JobStep[] {
+    if (!this.codeArtifactConfig.roleToAssume) return [];
+    const awsLogin: JobStep = {
+      name: 'Assume AWS Role For CodeArtifact',
+      uses: 'aws-actions/configure-aws-credentials@v4',
+      with: {
+        'role-to-assume': this.codeArtifactConfig.roleToAssume,
+        'aws-region': this.codeArtifactConfig.region,
+        'role-session-name': 'CodeArtifactSession',
+      },
+    };
+    const codeArtifactLogin: JobStep = {
+      name: 'Login to AWS CodeArtifact',
+      id: 'login-codeartifact',
+      run: `aws codeartifact login --tool npm --domain ${this.codeArtifactConfig.domain} --domain-owner ${this.codeArtifactConfig.accountId} --repository ${this.codeArtifactConfig.repository} --region ${this.codeArtifactConfig.region}`,
+    };
+    return [awsLogin, codeArtifactLogin];
+  }
+
+  setupStepsWithCodeArtifact(): JobStep[] {
+    const setupSteps = (this.package.project as NodeProject).renderWorkflowSetup();
+    const loginSteps = this.codeArtifactLoginSteps();
+    if (loginSteps.length === 0) return setupSteps;
+    const installIndex = setupSteps.findIndex(
+      (s) => s.name === 'Install dependencies',
+    );
+    if (installIndex === -1) return [...setupSteps, ...loginSteps];
+    return [
+      ...setupSteps.slice(0, installIndex),
+      ...loginSteps,
+      ...setupSteps.slice(installIndex),
+    ];
+  }
+
   addDeploymentStageToBuildWorkflow(releaseConfig: ReleaseConfig) {
     this.buildWorkflow?.addPostBuildSteps(this.awsCredentials(releaseConfig));
     this.buildWorkflow?.addPostBuildSteps(this.deploymentStep(this.package.packageManager, releaseConfig));
@@ -347,7 +367,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     jobDefinition.steps.push(this.checkoutStep('main'));
     jobDefinition.steps.push(this.latestTag());
     jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
-    jobDefinition.steps.push(...(this.package.project as NodeProject).renderWorkflowSetup());
+    jobDefinition.steps.push(...this.setupStepsWithCodeArtifact());
     jobDefinition.steps.push(this.awsCredentials(releaseConfig));
     const preDeploymentSteps = releaseConfig.preDeploymentSteps ?? [];
     for (const steps of preDeploymentSteps) {
@@ -381,7 +401,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     jobDefinition.steps.push(this.checkoutStep('main'));
     jobDefinition.steps.push(this.latestTag());
     jobDefinition.steps.push(this.checkoutStep('${{ env.CURRENT_TAG }}'));
-    jobDefinition.steps.push(...(this.package.project as NodeProject).renderWorkflowSetup());
+    jobDefinition.steps.push(...this.setupStepsWithCodeArtifact());
     jobDefinition.steps.push(this.awsCredentials(releaseConfig));
     const preDeploymentSteps = releaseConfig.preDeploymentSteps ?? [];
     for (const steps of preDeploymentSteps) {
