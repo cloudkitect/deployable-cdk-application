@@ -110,6 +110,19 @@ export interface ReleaseConfig {
      * e.g. ubuntu-24.04-arm
      */
   readonly runsOn?: string;
+
+  /**
+     * Run this release deployment in parallel with sibling `parallel: true`
+     * entries instead of chaining sequentially.
+     *
+     * Only applies to `workflowType: 'release'`. Parallel configs depend on the
+     * most recent non-parallel release job (or `release_github` if none yet);
+     * the next non-parallel release job waits for both the prior sequential
+     * anchor and every parallel job that ran since.
+     *
+     * @default false
+     */
+  readonly parallel?: boolean;
 }
 
 /**
@@ -211,7 +224,8 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   buildDeploymentStages() {
-    let releaseDependency = ['release_github'];
+    let releaseAnchor: string[] = ['release_github'];
+    let parallelBatch: string[] = [];
     if (this.codeArtifactConfig.roleToAssume) {
       const awsLogin = {
         name: 'Assume AWS Role For CodeArtifact',
@@ -239,8 +253,15 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       } else if (releaseConfig.workflowType == 'manual') {
         this.createManuallyApprovedWorkflowForDeploymentStage(releaseConfig);
       } else if (releaseConfig.workflowType == 'release') {
-        const jobName = this.addDeploymentStageToReleaseWorkflow(releaseConfig, releaseDependency);
-        releaseDependency = [jobName];
+        if (releaseConfig.parallel) {
+          const jobName = this.addDeploymentStageToReleaseWorkflow(releaseConfig, releaseAnchor);
+          parallelBatch.push(jobName);
+        } else {
+          const needs = [...releaseAnchor, ...parallelBatch];
+          const jobName = this.addDeploymentStageToReleaseWorkflow(releaseConfig, needs);
+          releaseAnchor = [jobName];
+          parallelBatch = [];
+        }
       } else {
         throw new TypeError('Unsupported workflowType: use build, release or manual');
       }
@@ -250,7 +271,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createDeploymentTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const deployCommand = this.buildDeployCommand(releaseConfig, options.stackPattern);
-      const taskName = `Deploy:${this.taskNamePostfix(releaseConfig)}`;
+      const taskName = `Deploy_${this.taskNamePostfix(releaseConfig)}`;
       const task = this.addTask(taskName, {
         exec: deployCommand,
       });
@@ -261,7 +282,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   createSynthTasks(options: DeployableCdkApplicationOptions) {
     for (let releaseConfig of this.releaseConfigs) {
       const synthCommand = this.buildSynthCommand(releaseConfig, options.stackPattern);
-      const taskName = `Synth:${this.taskNamePostfix(releaseConfig)}`;
+      const taskName = `Synth_${this.taskNamePostfix(releaseConfig)}`;
       this.addTask(taskName, {
         exec: synthCommand,
       });
@@ -371,7 +392,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     for (const steps of postDeploymentSteps) {
       jobDefinition.steps.push(steps);
     }
-    let jobName = `Deploy:${this.taskNamePostfix(releaseConfig)}`;
+    let jobName = `Deploy_${this.taskNamePostfix(releaseConfig)}`;
     const job: Record<string, Job> = {};
     job[jobName] = jobDefinition;
     this.release?.addJobs(job);
@@ -398,7 +419,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
         'role-to-assume': releaseOption.roleToAssume,
         'aws-region': releaseOption.region,
         'role-duration-seconds': releaseOption.deploymentRoleSessionDuration,
-        'role-session-name': `Session${this.taskNamePostfix(releaseOption).replace(':', '')}`,
+        'role-session-name': `Session_${this.taskNamePostfix(releaseOption)}`,
       },
     };
   }
@@ -457,13 +478,13 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   deploymentStep(packageManager: NodePackageManager, releaseConfig: ReleaseConfig): JobStep {
     return {
       name: `Deployment to ${this.taskNamePostfix(releaseConfig)}`,
-      run: `${this.packageManagerCommand(packageManager)} Deploy:${this.taskNamePostfix(releaseConfig)}`,
+      run: `${this.packageManagerCommand(packageManager)} Deploy_${this.taskNamePostfix(releaseConfig)}`,
     };
   }
 
   taskNamePostfix(releaseConfig: ReleaseConfig): string {
     if (releaseConfig.applicationName) {
-      return `${releaseConfig.accountType}:${releaseConfig.applicationName}`;
+      return `${releaseConfig.accountType}_${releaseConfig.applicationName}`;
     } else {
       return releaseConfig.accountType;
     }

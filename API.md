@@ -4937,6 +4937,7 @@ const releaseConfig: ReleaseConfig = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentMethod">deploymentMethod</a></code> | <code>string</code> | Deploy method. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.deploymentRoleSessionDuration">deploymentRoleSessionDuration</a></code> | <code>number</code> | Duration of assume role session. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.hotswap">hotswap</a></code> | <code>boolean</code> | Hotswap deployment. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.parallel">parallel</a></code> | <code>boolean</code> | Run this release deployment in parallel with sibling `parallel: true` entries instead of chaining sequentially. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.postDeploymentSteps">postDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Post deployment job steps. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.preDeploymentSteps">preDeploymentSteps</a></code> | <code>projen.github.workflows.JobStep[]</code> | Pre deployment job steps. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig.property.runsOn">runsOn</a></code> | <code>string</code> | The platform applications runs on e.g. ubuntu-24.04-arm. |
@@ -5068,6 +5069,24 @@ public readonly hotswap: boolean;
 - *Default:* false
 
 Hotswap deployment.
+
+---
+
+##### `parallel`<sup>Optional</sup> <a name="parallel" id="@cloudkitect/deployable-cdk-app.ReleaseConfig.property.parallel"></a>
+
+```typescript
+public readonly parallel: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Run this release deployment in parallel with sibling `parallel: true` entries instead of chaining sequentially.
+
+Only applies to `workflowType: 'release'`. Parallel configs depend on the
+most recent non-parallel release job (or `release_github` if none yet);
+the next non-parallel release job waits for both the prior sequential
+anchor and every parallel job that ran since.
 
 ---
 

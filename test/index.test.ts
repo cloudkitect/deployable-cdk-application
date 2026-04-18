@@ -115,3 +115,54 @@ describe('Multi app deployment', () => {
   });
 });
 
+describe('Multi app release deployment', () => {
+  const project = new DeployableCdkApplication({
+    name: 'my-test-multi-app-release',
+    defaultReleaseBranch: 'main',
+    cdkVersion: '1.49.0',
+    workflowNodeVersion: '14.18.1',
+    projenrcTs: true,
+    outdir: mkdtemp(),
+    releaseConfigs: [
+      {
+        accountType: 'Dev',
+        applicationName: 'Api',
+        deploymentMethod: 'change-set',
+        roleToAssume: 'devRoleApi',
+        region: 'us-east-1',
+        workflowType: 'release',
+        parallel: true,
+      },
+      {
+        accountType: 'Dev',
+        applicationName: 'Web',
+        deploymentMethod: 'change-set',
+        roleToAssume: 'devRoleWeb',
+        region: 'us-east-1',
+        workflowType: 'release',
+        parallel: true,
+      },
+      {
+        accountType: 'Prod',
+        applicationName: 'Api',
+        deploymentMethod: 'prepare-change-set',
+        roleToAssume: 'prodRoleApi',
+        region: 'us-east-1',
+        workflowType: 'release',
+      },
+      {
+        accountType: 'Prod',
+        applicationName: 'Web',
+        deploymentMethod: 'prepare-change-set',
+        roleToAssume: 'prodRoleWeb',
+        region: 'us-east-1',
+        workflowType: 'release',
+      },
+    ],
+  });
+  const synthOutput = synthSnapshot(project);
+  test('release workflow', () => {
+    expect(synthOutput[releaseWorkflowFilePath]).toMatchSnapshot();
+  });
+});
+
