@@ -77,5 +77,60 @@ releaseConfigs: [{
 
 You can add as many environments as you want.
 
+### Installing npm packages from AWS CodeArtifact
+
+If your packages are hosted in an AWS CodeArtifact repository rather than public npm, add a
+`codeArtifactConfig` to your project. It sits next to `releaseConfigs` in `.projenrc.ts` — it is a
+project level option rather than a per environment one, because the npm registry is shared by every
+workflow that installs packages.
+
+```typescript
+const project = new DeployableCdkApplication({
+    // ...rest of your project options
+    releaseConfigs: [{
+        accountType: 'Dev',
+        deploymentMethod: 'change-set',
+        roleToAssume: 'role-arn',
+        region: 'us-east-1',
+        workflowType: 'build'
+    }],
+    codeArtifactConfig: {
+        roleToAssume: 'arn:aws:iam::ACCOUNTID:role/GithubRole',
+        region: 'us-east-1',
+        accountId: 'ACCOUNTID',
+        domain: 'CK',
+        repository: 'CK-artifacts'
+    }
+});
+```
+
+roleToAssume: ARN of the role the workflow assumes to read from CodeArtifact. It needs
+`codeartifact:GetAuthorizationToken`, `codeartifact:ReadFromRepository`,
+`codeartifact:GetRepositoryEndpoint` and `sts:GetServiceBearerToken`.
+
+region: The region the CodeArtifact domain lives in.
+
+accountId: The AWS account that owns the CodeArtifact domain.
+
+domain: The CodeArtifact domain name.
+
+repository: The CodeArtifact repository name inside that domain.
+
+That is the whole setup — you do not need to patch any workflow by hand. Two steps, `Assume AWS Role
+For CodeArtifact` and `Login to AWS CodeArtifact`, are inserted immediately before the
+`Install dependencies` step of every job that installs packages:
+
+* the `build` job of the build workflow
+* the `release` job of the release workflow, which builds and publishes the package
+* every `Deploy_<Environment>` job added by a `release` release config
+* the `deploy_to_<Environment>` job of each workflow created by a `manual` release config
+* the `upgrade` job of the dependency upgrade workflow
+
+Because the role is assumed through GitHub OIDC, each of those jobs needs `id-token: write`. Projen
+does not grant that to the `release` and `upgrade` jobs by default, so it is added for you whenever
+`codeArtifactConfig` is set.
+
+Note: setting `codeArtifactConfig` also switches the build job to the `ubuntu-24.04-arm` runner.
+
 Note: This setup requires that you have configured github as OIDC provider in your aws account 
 and have created a role with appropriate permissions. Checkout the following [link for CDK code](https://github.com/aws-samples/github-actions-oidc-cdk-construct)

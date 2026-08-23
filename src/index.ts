@@ -1,8 +1,21 @@
 import { JsonPatch, Task } from 'projen';
 import { AwsCdkTypeScriptApp, AwsCdkTypeScriptAppOptions } from 'projen/lib/awscdk';
-import { GithubWorkflow } from 'projen/lib/github';
+import { GithubWorkflow, WorkflowSteps } from 'projen/lib/github';
+import { GitHubActions } from 'projen/lib/github/actions.const';
 import { Job, JobPermission, JobStep } from 'projen/lib/github/workflows-model';
-import { NodePackageManager, NodeProject } from 'projen/lib/javascript';
+import { NodePackageManager, RenderWorkflowSetupOptions } from 'projen/lib/javascript';
+
+/**
+ * Step id of the generated `aws codeartifact login` step.
+ */
+const CODE_ARTIFACT_LOGIN_STEP_ID = 'login-codeartifact';
+
+/**
+ * `NodeProject` calls `renderWorkflowSetup()` from its own constructor, which
+ * runs before subclass fields are assigned. This holds the CodeArtifact config
+ * of the instance currently being constructed so the override can see it.
+ */
+let pendingCodeArtifactConfig: CodeArtifactConfig | undefined;
 
 /**
  * Supported deployment methods
@@ -14,11 +27,23 @@ export type DeploymentMethod = 'direct' | 'change-set' | 'prepare-change-set';
 export type AccountType = 'Dev' | 'Test' | 'QA' | 'Uat' | 'PreProd' | 'Prod';
 
 /**
- * Code Artifact for installing NPM packages
+ * Configuration for installing NPM packages from an AWS CodeArtifact repository
+ * instead of the public npm registry.
+ *
+ * When set, an `Assume AWS Role For CodeArtifact` step and an
+ * `aws codeartifact login` step are inserted immediately before the dependency
+ * install step of every job that installs packages: the build job, the release
+ * job, the dependency upgrade job, and each deployment job created from
+ * `releaseConfigs`. The role is assumed through GitHub OIDC, so `id-token:
+ * write` is granted to those jobs as well.
  */
 export interface CodeArtifactConfig {
   /**
      * ARN of AWS role to be assumed by code artifact
+     *
+     * Requires `codeartifact:GetAuthorizationToken`,
+     * `codeartifact:ReadFromRepository`, `codeartifact:GetRepositoryEndpoint`
+     * and `sts:GetServiceBearerToken`.
      * @example arn:aws:iam::ACCOUNTID:role/ROLENAME
      */
   readonly roleToAssume?: string;
@@ -139,6 +164,10 @@ export interface DeployableCdkApplicationOptions extends AwsCdkTypeScriptAppOpti
   readonly releaseConfigs?: ReleaseConfig[];
   /**
      * If using code artifact for installing packages, provide necessary details.
+     *
+     * Applies to every generated workflow that installs packages - build,
+     * release, dependency upgrade and the deployment jobs alike - so no
+     * workflow patching is needed on the consumer side.
      * @default uses public npmjs for installing packages
      */
   readonly codeArtifactConfig?: CodeArtifactConfig;
@@ -166,6 +195,9 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   readonly codeArtifactConfig: CodeArtifactConfig;
 
   constructor(options: DeployableCdkApplicationOptions) {
+    // Must be set before `super()`: projen renders the build and release
+    // workflow setup steps from within the `NodeProject` constructor.
+    pendingCodeArtifactConfig = options.codeArtifactConfig;
     super({
       ...options,
       buildWorkflowOptions: {
@@ -205,6 +237,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
         '',
       ],
     });
+    pendingCodeArtifactConfig = undefined;
     this.releaseConfigs = options.releaseConfigs ?? [];
     this.codeArtifactConfig = options.codeArtifactConfig ?? {};
     this.deploymentTasks = [];
@@ -227,11 +260,11 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     let releaseAnchor: string[] = ['release_github'];
     let parallelBatch: string[] = [];
     if (this.codeArtifactConfig.roleToAssume) {
-      const [awsLogin, codeArtifactLogin] = this.codeArtifactLoginSteps();
+      // The login steps themselves are injected by `renderWorkflowSetup()`, which
+      // covers the build, release and upgrade workflows alike. Only the runner
+      // flip is left to patch here.
       const buildFile = this.github?.tryFindWorkflow('build')?.file;
       buildFile?.patch(JsonPatch.add('/jobs/build/runs-on', 'ubuntu-24.04-arm'));
-      buildFile?.patch(JsonPatch.add('/jobs/build/steps/2', awsLogin));
-      buildFile?.patch(JsonPatch.add('/jobs/build/steps/3', codeArtifactLogin));
     }
     this.releaseConfigs.forEach((releaseConfig) => {
       if (releaseConfig.workflowType == 'build') {
@@ -252,6 +285,30 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
         throw new TypeError('Unsupported workflowType: use build, release or manual');
       }
     });
+    this.grantIdTokenToCodeArtifactJobs();
+  }
+
+  /**
+   * `aws-actions/configure-aws-credentials` assumes the CodeArtifact role over
+   * GitHub OIDC, which the job can only do with `id-token: write`. projen's
+   * `release` and `upgrade` jobs are not granted it by default, so top it up
+   * wherever a login step was injected.
+   */
+  private grantIdTokenToCodeArtifactJobs() {
+    if (!this.codeArtifactConfig.roleToAssume) return;
+    for (const workflow of this.github?.workflows ?? []) {
+      for (const [jobId, job] of Object.entries(workflow.jobs)) {
+        const steps = (job as Job).steps;
+        // Lazily rendered jobs (the build job) cannot be inspected here; those
+        // are granted `id-token` through `buildWorkflowOptions` already.
+        if (!Array.isArray(steps)) continue;
+        if (!steps.some((step) => step.id === CODE_ARTIFACT_LOGIN_STEP_ID)) continue;
+        if ((job as Job).permissions?.idToken === JobPermission.WRITE) continue;
+        workflow.file?.patch(
+          JsonPatch.add(`/jobs/${jobId}/permissions/id-token`, 'write'),
+        );
+      }
+    }
   }
 
   createDeploymentTasks(options: DeployableCdkApplicationOptions) {
@@ -314,28 +371,48 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   codeArtifactLoginSteps(): JobStep[] {
-    if (!this.codeArtifactConfig.roleToAssume) return [];
+    // `this.codeArtifactConfig` is still unassigned while `super()` is running,
+    // hence the fallback to the config stashed by the constructor.
+    const config = this.codeArtifactConfig ?? pendingCodeArtifactConfig ?? {};
+    if (!config.roleToAssume) return [];
     const awsLogin: JobStep = {
       name: 'Assume AWS Role For CodeArtifact',
-      uses: 'aws-actions/configure-aws-credentials@v4',
+      uses: GitHubActions.AWS_ACTIONS_CONFIGURE_AWS_CREDENTIALS,
       with: {
-        'role-to-assume': this.codeArtifactConfig.roleToAssume,
-        'aws-region': this.codeArtifactConfig.region,
+        'role-to-assume': config.roleToAssume,
+        'aws-region': config.region,
         'role-session-name': 'CodeArtifactSession',
       },
     };
     const codeArtifactLogin: JobStep = {
       name: 'Login to AWS CodeArtifact',
-      id: 'login-codeartifact',
-      run: `aws codeartifact login --tool npm --domain ${this.codeArtifactConfig.domain} --domain-owner ${this.codeArtifactConfig.accountId} --repository ${this.codeArtifactConfig.repository} --region ${this.codeArtifactConfig.region}`,
+      id: CODE_ARTIFACT_LOGIN_STEP_ID,
+      run: `aws codeartifact login --tool npm --domain ${config.domain} --domain-owner ${config.accountId} --repository ${config.repository} --region ${config.region}`,
     };
     return [awsLogin, codeArtifactLogin];
   }
 
+  /**
+   * Renders the workflow bootstrap steps, with the AWS CodeArtifact login
+   * spliced in just before the dependency install step.
+   *
+   * projen funnels the build, release and upgrade workflows through this
+   * method, so overriding it is what makes `codeArtifactConfig` apply to every
+   * job that installs packages rather than to the build workflow alone.
+   */
+  renderWorkflowSetup(options: RenderWorkflowSetupOptions = {}): JobStep[] {
+    return this.withCodeArtifactLogin(super.renderWorkflowSetup(options));
+  }
+
   setupStepsWithCodeArtifact(): JobStep[] {
-    const setupSteps = (this.package.project as NodeProject).renderWorkflowSetup();
+    return this.renderWorkflowSetup();
+  }
+
+  private withCodeArtifactLogin(setupSteps: JobStep[]): JobStep[] {
     const loginSteps = this.codeArtifactLoginSteps();
     if (loginSteps.length === 0) return setupSteps;
+    // Guard against a second injection if callers compose rendered setups.
+    if (setupSteps.some((s) => s.id === CODE_ARTIFACT_LOGIN_STEP_ID)) return setupSteps;
     const installIndex = setupSteps.findIndex(
       (s) => s.name === 'Install dependencies',
     );
@@ -420,21 +497,20 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   checkoutStep(passedRef: string): JobStep {
-    return {
-      name: 'Checkout',
-      uses: 'actions/checkout@v4',
+    // Delegate to projen so the `actions/checkout` version stays in lockstep with
+    // the one projen renders into the build/release workflows.
+    return WorkflowSteps.checkout({
       with: {
-        'ref': passedRef,
-        // 'token': '${{ secrets.PAT }}',
-        'fetch-depth': 0,
+        ref: passedRef,
+        fetchDepth: 0,
       },
-    };
+    });
   }
 
   awsCredentials(releaseOption: ReleaseConfig): JobStep {
     return {
       name: `Assume AWS Role in ${this.taskNamePostfix(releaseOption)}`,
-      uses: 'aws-actions/configure-aws-credentials@v4',
+      uses: GitHubActions.AWS_ACTIONS_CONFIGURE_AWS_CREDENTIALS,
       with: {
         'role-to-assume': releaseOption.roleToAssume,
         'aws-region': releaseOption.region,
