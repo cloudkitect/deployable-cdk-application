@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       projen:
-        specifier: ^0.103.1
-        version: 0.103.1(constructs@10.8.1)
+        specifier: ^0.103.23
+        version: 0.103.23(constructs@10.8.1)
     devDependencies:
       '@stylistic/eslint-plugin':
         specifier: ^2
@@ -2505,8 +2505,8 @@ packages:
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
 
-  projen@0.103.1:
-    resolution: {integrity: sha512-TpHXhoEwiHjMFMeJu4OLgUEh9VtDQx02BY4Ng1KckHP6PWNWF5CS+LfnxUmecp1z9JR0fno2Bnf0FblIktkqMQ==}
+  projen@0.103.23:
+    resolution: {integrity: sha512-VYNjslMGg9GBQ7qotCW8rntHNZ4a61EDZfvBJXlfWRcpB5Kd8V3cQB4WriDJYQV1euR6MsGQDWERD1PF4wex3A==}
     engines: {node: '>= 16.0.0'}
     hasBin: true
     peerDependencies:
@@ -2522,6 +2522,7 @@ packages:
       - fast-json-patch
       - ini
       - parse-conflict-json
+      - properties-file
       - semver
       - xmlbuilder2
       - yaml
@@ -6185,7 +6186,7 @@ snapshots:
 
   process-nextick-args@2.0.1: {}
 
-  projen@0.103.1(constructs@10.8.1):
+  projen@0.103.23(constructs@10.8.1):
     dependencies:
       constructs: 10.8.1
 
