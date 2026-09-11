@@ -116,6 +116,50 @@ describe('Multi app deployment', () => {
   });
 });
 
+describe('Multi app manual deployment', () => {
+  const project = new DeployableCdkApplication({
+    name: 'my-test-multi-app-manual',
+    defaultReleaseBranch: 'main',
+    cdkVersion: '2.266.0',
+    workflowNodeVersion: '14.18.1',
+    projenrcTs: true,
+    outdir: mkdtemp(),
+    releaseConfigs: [
+      {
+        accountType: 'Prod',
+        applicationName: 'Api',
+        deploymentMethod: 'prepare-change-set',
+        roleToAssume: 'prodRoleApi',
+        region: 'us-east-1',
+        workflowType: 'manual',
+      },
+      {
+        accountType: 'Prod',
+        applicationName: 'Web',
+        deploymentMethod: 'prepare-change-set',
+        roleToAssume: 'prodRoleWeb',
+        region: 'us-east-1',
+        workflowType: 'manual',
+      },
+    ],
+  });
+  const synthOutput = synthSnapshot(project);
+
+  test('each application gets its own manual workflow file', () => {
+    expect(synthOutput['.github/workflows/prod-api-deployment-workflow.yml']).toBeDefined();
+    expect(synthOutput['.github/workflows/prod-web-deployment-workflow.yml']).toBeDefined();
+    expect(synthOutput[deployToProdWorkflowFilePath]).toBeUndefined();
+  });
+
+  test('prod api manual workflow', () => {
+    expect(synthOutput['.github/workflows/prod-api-deployment-workflow.yml']).toMatchSnapshot();
+  });
+
+  test('prod web manual workflow', () => {
+    expect(synthOutput['.github/workflows/prod-web-deployment-workflow.yml']).toMatchSnapshot();
+  });
+});
+
 describe('Multi app release deployment', () => {
   const project = new DeployableCdkApplication({
     name: 'my-test-multi-app-release',
