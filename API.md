@@ -72,6 +72,7 @@ new DeployableCdkApplication(options: DeployableCdkApplicationOptions)
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.generateToken">generateToken</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.latestTag">latestTag</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualApprovalStep">manualApprovalStep</a></code> | *No description.* |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualWorkflowName">manualWorkflowName</a></code> | File name (without extension) of the workflow generated for a `workflowType: 'manual'` config. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.packageManagerCommand">packageManagerCommand</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.setupStepsWithCodeArtifact">setupStepsWithCodeArtifact</a></code> | *No description.* |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplication.taskNamePostfix">taskNamePostfix</a></code> | *No description.* |
@@ -737,6 +738,25 @@ public manualApprovalStep(releaseConfig: ReleaseConfig): JobStep
 ```
 
 ###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualApprovalStep.parameter.releaseConfig"></a>
+
+- *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
+
+---
+
+##### `manualWorkflowName` <a name="manualWorkflowName" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualWorkflowName"></a>
+
+```typescript
+public manualWorkflowName(releaseConfig: ReleaseConfig): string
+```
+
+File name (without extension) of the workflow generated for a `workflowType: 'manual'` config.
+
+The application name is part of the name so that two configs sharing an
+account type (e.g. `Prod/Api` and `Prod/Web`) do not collide on the same
+`GithubWorkflow` construct. Configs without an `applicationName` keep the
+historical `${accountType}-deployment-workflow` name.
+
+###### `releaseConfig`<sup>Required</sup> <a name="releaseConfig" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplication.manualWorkflowName.parameter.releaseConfig"></a>
 
 - *Type:* <a href="#@cloudkitect/deployable-cdk-app.ReleaseConfig">ReleaseConfig</a>
 

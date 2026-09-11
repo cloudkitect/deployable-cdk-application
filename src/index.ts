@@ -353,13 +353,12 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   }
 
   createManuallyApprovedWorkflowForDeploymentStage(releaseConfig: ReleaseConfig): GithubWorkflow | undefined {
-    const workflowName = `${releaseConfig.accountType.toLowerCase()}-deployment-workflow`;
-    const deploymentWorkflow = this.github?.addWorkflow(workflowName);
+    const deploymentWorkflow = this.github?.addWorkflow(this.manualWorkflowName(releaseConfig));
     deploymentWorkflow?.on({
       workflowDispatch: {
         inputs: {
           tag: {
-            description: `Version tag to deploy to ${releaseConfig.accountType}`,
+            description: `Version tag to deploy to ${this.taskNamePostfix(releaseConfig)}`,
             required: true,
           },
         },
@@ -455,7 +454,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     for (const steps of postDeploymentSteps) {
       jobDefinition.steps.push(steps);
     }
-    let jobName = `deploy_to_${releaseConfig.accountType}`;
+    let jobName = `deploy_to_${this.taskNamePostfix(releaseConfig)}`;
     const job: Record<string, Job> = {};
     job[jobName] = jobDefinition;
     workflow?.addJobs(job);
@@ -576,6 +575,22 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
       name: `Deployment to ${this.taskNamePostfix(releaseConfig)}`,
       run: `${this.packageManagerCommand(packageManager)} Deploy_${this.taskNamePostfix(releaseConfig)}`,
     };
+  }
+
+  /**
+   * File name (without extension) of the workflow generated for a
+   * `workflowType: 'manual'` config.
+   *
+   * The application name is part of the name so that two configs sharing an
+   * account type (e.g. `Prod/Api` and `Prod/Web`) do not collide on the same
+   * `GithubWorkflow` construct. Configs without an `applicationName` keep the
+   * historical `${accountType}-deployment-workflow` name.
+   */
+  manualWorkflowName(releaseConfig: ReleaseConfig): string {
+    const postfix = releaseConfig.applicationName
+      ? `${releaseConfig.accountType}-${releaseConfig.applicationName}`
+      : releaseConfig.accountType;
+    return `${postfix.toLowerCase()}-deployment-workflow`;
   }
 
   taskNamePostfix(releaseConfig: ReleaseConfig): string {
