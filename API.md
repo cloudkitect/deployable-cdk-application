@@ -1954,6 +1954,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bundledDeps">bundledDeps</a></code> | <code>string[]</code> | List of dependencies to bundle into this module. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bunVersion">bunVersion</a></code> | <code>string</code> | The version of Bun to use if using Bun as a package manager. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.codeArtifactOptions">codeArtifactOptions</a></code> | <code>projen.javascript.CodeArtifactOptions</code> | Options for npm packages using AWS CodeArtifact. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.config">config</a></code> | <code>{[ key: string ]: any}</code> | Configuration values available to package scripts at runtime. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.dedupeDeps">dedupeDeps</a></code> | <code>boolean</code> | Add a `dedupe` task that deduplicates project dependencies. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.deleteOrphanedLockFiles">deleteOrphanedLockFiles</a></code> | <code>boolean</code> | Automatically delete lockfiles from package managers that are not the active one. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.deps">deps</a></code> | <code>string[]</code> | Runtime dependencies of this module. |
@@ -1984,6 +1985,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.stability">stability</a></code> | <code>string</code> | Package's Stability. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.yarnBerryOptions">yarnBerryOptions</a></code> | <code>projen.javascript.YarnBerryOptions</code> | Options for Yarn Berry. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.bumpPackage">bumpPackage</a></code> | <code>string</code> | The `commit-and-tag-version` compatible package used to bump the package version, as a dependency string. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.githubReleaseLatest">githubReleaseLatest</a></code> | <code>boolean</code> | Whether GitHub should explicitly mark the release from the default branch as the latest release. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.jsiiReleaseVersion">jsiiReleaseVersion</a></code> | <code>string</code> | Version requirement of `publib` which is used to publish modules to npm. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.majorVersion">majorVersion</a></code> | <code>number</code> | Major version to release from the default branch. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.minMajorVersion">minMajorVersion</a></code> | <code>number</code> | Minimal Major version to release. |
@@ -2064,6 +2066,7 @@ const deployableCdkApplicationOptions: DeployableCdkApplicationOptions = { ... }
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.tsconfigDev">tsconfigDev</a></code> | <code>projen.javascript.TypescriptConfigOptions</code> | Custom tsconfig options for the development tsconfig.json file (used for testing). |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.tsconfigDevFile">tsconfigDevFile</a></code> | <code>string</code> | The name (and path) of the development tsconfig file. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.tsJestOptions">tsJestOptions</a></code> | <code>projen.typescript.TsJestOptions</code> | Options for ts-jest. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.typecheckTests">typecheckTests</a></code> | <code>boolean</code> | Type-check the test suite as part of the `test` task. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.typescriptVersion">typescriptVersion</a></code> | <code>string</code> | TypeScript version to use. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.buildCommand">buildCommand</a></code> | <code>string</code> | A command to execute before synthesis. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.cdkout">cdkout</a></code> | <code>string</code> | cdk.out directory. |
@@ -2678,6 +2681,23 @@ This is required if publishing packages to, or installing scoped packages from A
 
 ---
 
+##### `config`<sup>Optional</sup> <a name="config" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.config"></a>
+
+```typescript
+public readonly config: {[ key: string ]: any};
+```
+
+- *Type:* {[ key: string ]: any}
+- *Default:* no package configuration
+
+Configuration values available to package scripts at runtime.
+
+Values should be JSON-serializable.
+
+> [https://docs.npmjs.com/cli/v11/configuring-npm/package-json#config](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#config)
+
+---
+
 ##### `dedupeDeps`<sup>Optional</sup> <a name="dedupeDeps" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.dedupeDeps"></a>
 
 ```typescript
@@ -3167,6 +3187,22 @@ public readonly bumpPackage: string;
 The `commit-and-tag-version` compatible package used to bump the package version, as a dependency string.
 
 This can be any compatible package version, including the deprecated `standard-version@9`.
+
+---
+
+##### `githubReleaseLatest`<sup>Optional</sup> <a name="githubReleaseLatest" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.githubReleaseLatest"></a>
+
+```typescript
+public readonly githubReleaseLatest: boolean;
+```
+
+- *Type:* boolean
+- *Default:* GitHub determines the latest release based on date and semantic version.
+
+Whether GitHub should explicitly mark the release from the default branch as the latest release.
+
+Set to `true` to mark the release as latest, or `false` to explicitly not
+mark it as latest.
 
 ---
 
@@ -4295,6 +4331,21 @@ public readonly tsJestOptions: TsJestOptions;
 - *Type:* projen.typescript.TsJestOptions
 
 Options for ts-jest.
+
+---
+
+##### `typecheckTests`<sup>Optional</sup> <a name="typecheckTests" id="@cloudkitect/deployable-cdk-app.DeployableCdkApplicationOptions.property.typecheckTests"></a>
+
+```typescript
+public readonly typecheckTests: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Type-check the test suite as part of the `test` task.
+
+Adds a `tsc --noEmit` step against the development tsconfig.
 
 ---
 

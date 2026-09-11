@@ -1,7 +1,6 @@
 import { JsonPatch, Task } from 'projen';
 import { AwsCdkTypeScriptApp, AwsCdkTypeScriptAppOptions } from 'projen/lib/awscdk';
-import { GithubWorkflow, WorkflowSteps } from 'projen/lib/github';
-import { GitHubActions } from 'projen/lib/github/actions.const';
+import { ActionRefs, GithubWorkflow, WorkflowSteps } from 'projen/lib/github';
 import { Job, JobPermission, JobStep } from 'projen/lib/github/workflows-model';
 import { NodePackageManager, RenderWorkflowSetupOptions } from 'projen/lib/javascript';
 
@@ -376,7 +375,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     if (!config.roleToAssume) return [];
     const awsLogin: JobStep = {
       name: 'Assume AWS Role For CodeArtifact',
-      uses: GitHubActions.AWS_ACTIONS_CONFIGURE_AWS_CREDENTIALS,
+      uses: ActionRefs.AWS_ACTIONS_CONFIGURE_AWS_CREDENTIALS,
       with: {
         'role-to-assume': config.roleToAssume,
         'aws-region': config.region,
@@ -509,7 +508,7 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
   awsCredentials(releaseOption: ReleaseConfig): JobStep {
     return {
       name: `Assume AWS Role in ${this.taskNamePostfix(releaseOption)}`,
-      uses: GitHubActions.AWS_ACTIONS_CONFIGURE_AWS_CREDENTIALS,
+      uses: ActionRefs.AWS_ACTIONS_CONFIGURE_AWS_CREDENTIALS,
       with: {
         'role-to-assume': releaseOption.roleToAssume,
         'aws-region': releaseOption.region,
