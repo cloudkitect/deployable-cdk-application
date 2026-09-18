@@ -66,6 +66,16 @@ export interface CodeArtifactConfig {
      * @example "my_repo"
      */
   readonly repository?: string;
+  /**
+     * npm scope to associate with the CodeArtifact repository, passed to
+     * `aws codeartifact login` as `--namespace`. When set, only packages in
+     * this scope are resolved from CodeArtifact; all other packages keep
+     * using the default npm registry. When omitted, CodeArtifact becomes the
+     * registry for every package.
+     * @example "@my-scope"
+     * @default - no namespace, CodeArtifact is used for all packages
+     */
+  readonly namespace?: string;
 }
 
 /**
@@ -385,7 +395,10 @@ export class DeployableCdkApplication extends AwsCdkTypeScriptApp {
     const codeArtifactLogin: JobStep = {
       name: 'Login to AWS CodeArtifact',
       id: CODE_ARTIFACT_LOGIN_STEP_ID,
-      run: `aws codeartifact login --tool npm --domain ${config.domain} --domain-owner ${config.accountId} --repository ${config.repository} --region ${config.region}`,
+      run: [
+        `aws codeartifact login --tool npm --domain ${config.domain} --domain-owner ${config.accountId} --repository ${config.repository} --region ${config.region}`,
+        ...(config.namespace ? [`--namespace ${config.namespace}`] : []),
+      ].join(' '),
     };
     return [awsLogin, codeArtifactLogin];
   }

@@ -99,7 +99,8 @@ const project = new DeployableCdkApplication({
         region: 'us-east-1',
         accountId: 'ACCOUNTID',
         domain: 'CK',
-        repository: 'CK-artifacts'
+        repository: 'CK-artifacts',
+        namespace: '@ck' // optional
     }
 });
 ```
@@ -115,6 +116,11 @@ accountId: The AWS account that owns the CodeArtifact domain.
 domain: The CodeArtifact domain name.
 
 repository: The CodeArtifact repository name inside that domain.
+
+namespace (optional): An npm scope, e.g. `@my-scope`, passed to `aws codeartifact login` as
+`--namespace`. When set, only packages in that scope are fetched from CodeArtifact and everything
+else still comes from the public npm registry. When omitted, CodeArtifact is the registry for all
+packages.
 
 That is the whole setup — you do not need to patch any workflow by hand. Two steps, `Assume AWS Role
 For CodeArtifact` and `Login to AWS CodeArtifact`, are inserted immediately before the
