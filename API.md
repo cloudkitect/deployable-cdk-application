@@ -1793,6 +1793,7 @@ const codeArtifactConfig: CodeArtifactConfig = { ... }
 | --- | --- | --- |
 | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.accountId">accountId</a></code> | <code>string</code> | Code Artifact account id. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.domain">domain</a></code> | <code>string</code> | Code Artifact domain name. |
+| <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.namespace">namespace</a></code> | <code>string</code> | npm scope to associate with the CodeArtifact repository, passed to `aws codeartifact login` as `--namespace`. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.region">region</a></code> | <code>string</code> | Code Artifact region. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.repository">repository</a></code> | <code>string</code> | Code Artifact repository name. |
 | <code><a href="#@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.roleToAssume">roleToAssume</a></code> | <code>string</code> | ARN of AWS role to be assumed by code artifact. |
@@ -1834,6 +1835,31 @@ Code Artifact domain name.
 
 ```typescript
 "domain"
+```
+
+
+##### `namespace`<sup>Optional</sup> <a name="namespace" id="@cloudkitect/deployable-cdk-app.CodeArtifactConfig.property.namespace"></a>
+
+```typescript
+public readonly namespace: string;
+```
+
+- *Type:* string
+- *Default:* no namespace, CodeArtifact is used for all packages
+
+npm scope to associate with the CodeArtifact repository, passed to `aws codeartifact login` as `--namespace`.
+
+When set, only packages in
+this scope are resolved from CodeArtifact; all other packages keep
+using the default npm registry. When omitted, CodeArtifact becomes the
+registry for every package.
+
+---
+
+*Example*
+
+```typescript
+"@my-scope"
 ```
 
 

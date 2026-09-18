@@ -287,4 +287,30 @@ describe('CodeArtifact package registry', () => {
       .toBeLessThan(count(withCodeArtifact[releaseWorkflowFilePath], 'id-token: write'));
     expect(withoutCodeArtifact[upgradeWorkflowFilePath]).not.toContain('id-token: write');
   });
+
+  test('login omits --namespace when no namespace is given', () => {
+    expect(withCodeArtifact[buildWorkflowFilePath]).not.toContain('--namespace');
+  });
+
+  test('login passes --namespace when a namespace is given', () => {
+    const withNamespace = synthSnapshot(new DeployableCdkApplication({
+      name: 'my-test-code-artifact-namespace',
+      defaultReleaseBranch: 'main',
+      cdkVersion: '2.266.0',
+      projenrcTs: true,
+      outdir: mkdtemp(),
+      releaseConfigs: [],
+      codeArtifactConfig: {
+        roleToAssume: 'arn:aws:iam::123:role/GithubRole',
+        region: 'us-east-1',
+        accountId: '123',
+        repository: 'CK-artifacts',
+        domain: 'CK',
+        namespace: '@ck',
+      },
+    }));
+    expect(withNamespace[buildWorkflowFilePath]).toContain(
+      'aws codeartifact login --tool npm --domain CK --domain-owner 123 --repository CK-artifacts --region us-east-1 --namespace @ck',
+    );
+  });
 });
